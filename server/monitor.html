@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICCT Registrar - Live Queue Monitor</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --border-dark: #334155;
+            --accent-blue: #38bdf8;
+            --success-green: #22c55e;
+            --warning-orange: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: #f8fafc;
+            margin: 0;
+            padding: 30px;
+            text-align: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .header-container {
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--accent-blue);
+            margin: 0 0 8px 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            background: var(--card-dark);
+            padding: 25px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            min-height: 450px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-dark);
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        .column h2 {
+            border-bottom: 2px solid var(--border-dark);
+            padding-bottom: 12px;
+            margin-top: 0;
+            color: #f1f5f9;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ticket-card {
+            background: #273548;
+            padding: 16px 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--warning-orange);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .ticket-card.ready {
+            border-left-color: var(--success-green);
+            background: #143024;
+        }
+
+        .badge {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning-orange);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-ready {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success-green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .window-tag {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-blue);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .window-tag.ready-tag {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success-green);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 50px 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <h1><i class="fa-solid fa-tv"></i> ICCT Registrar Live Queue Monitor</h1>
+        <p class="subtitle">Real-time display of active student queues and assigned service windows.</p>
+    </div>
+
+    <div class="container">
+        <!-- Waiting Column -->
+        <div class="column">
+            <h2><i class="fa-solid fa-clock" style="color: var(--warning-orange);"></i> Waiting Queue</h2>
+            <div id="waitingList">
+                <div class="empty-state">Loading waiting queue...</div>
+            </div>
+        </div>
+
+        <!-- Ready for Pickup Column -->
+        <div class="column">
+            <h2><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> Ready for Pickup</h2>
+            <div id="readyList">
+                <div class="empty-state">Loading ready queue...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchQueue() {
+            try {
+                const response = await fetch('/api/appointments');
+                const data = await response.json();
+
+                const waitingList = document.getElementById('waitingList');
+                const readyList = document.getElementById('readyList');
+
+                waitingList.innerHTML = '';
+                readyList.innerHTML = '';
+
+                if (data.length === 0) {
+                    waitingList.innerHTML = '<div class="empty-state">No active queues found.</div>';
+                    readyList.innerHTML = '<div class="empty-state">No documents ready for pickup.</div>';
+                    return;
+                }
+
+                let waitingCount = 0;
+                let readyCount = 0;
+
+                data.forEach(item => {
+                    const card = document.createElement('div');
+                    const windowName = item.window || 'Window 3';
+
+                    if (item.status === 'Waiting') {
+                        waitingCount++;
+                        card.className = 'ticket-card';
+                        card.innerHTML = `
+                            <div>
+                                <strong style="font-size: 1.1rem; color: #f8fafc;">${item.name}</strong><br>
+                                <span style="font-size: 0.85rem; color: #94a3b8;"><i class="fa-solid fa-file-lines"></i> ${item.service}</span><br>
+                                <span class="window-tag"><i class="fa-solid fa-window-maximize"></i> ${windowName}</span>
+                            </div>
+                            <span class="badge">Waiting</span>
+                        `;
+                        waitingList.appendChild(card);
+                    } else if (item.status === 'Ready for Pickup') {
+                        readyCount++;
+                        card.className = 'ticket-card ready';
+                        card.innerHTML = `
+                            <div>
+                                <strong style="font-size: 1.1rem; color: #f8fafc;">${item.name}</strong><br>
+                                <span style="font-size: 0.85rem; color: #94a3b8;"><i class="fa-solid fa-file-lines"></i> ${item.service}</span><br>
+                                <span class="window-tag ready-tag"><i class="fa-solid fa-window-maximize"></i> ${windowName}</span>
+                            </div>
+                            <span class="badge badge-ready">Ready</span>
+                        `;
+                        readyList.appendChild(card);
+                    }
+                });
+
+                if (waitingCount === 0) {
+                    waitingList.innerHTML = '<div class="empty-state">No active queues found.</div>';
+                }
+                if (readyCount === 0) {
+                    readyList.innerHTML = '<div class="empty-state">No documents ready for pickup.</div>';
+                }
+
+            } catch (err) {
+                console.error("Error fetching queue:", err);
+            }
+        }
+
+        // Auto refresh every 2 seconds for real-time update
+        setInterval(fetchQueue, 2000);
+        fetchQueue();
+    </script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICCT Registrar - Student Login</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #004080;
+            --primary-hover: #003366;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --border-color: #cbd5e1;
+            --error-bg: #fef2f2;
+            --error-border: #fecaca;
+            --error-text: #991b1b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 35px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 420px;
+            box-sizing: border-box;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-badge {
+            background: #e6f0fa;
+            color: var(--primary);
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+            font-size: 1.3rem;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin: 0 0 6px 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.82rem;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        .input-field-wrapper {
+            position: relative;
+        }
+
+        .input-field-wrapper i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 15px 11px 42px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+            background-color: #fff;
+            transition: all 0.3s ease;
+            color: var(--text-main);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 64, 128, 0.1);
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button.submit-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        button.submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        #errorMsg {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--error-text);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+        }
+
+        .demo-credentials {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: #64748b;
+            text-align: center;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header-container">
+            <div class="logo-badge">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h2>Student Portal Login</h2>
+            <p class="subtitle">ICCT Registrar Queueing System</p>
+        </div>
+
+        <div id="errorMsg"></div>
+        
+        <form id="loginForm">
+            <!-- Full Name Field -->
+            <div class="input-group">
+                <label for="fullName">Full Name</label>
+                <div class="input-field-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="fullName" placeholder="e.g., Jan Cristan Deangkinay" required>
+                </div>
+            </div>
+
+            <!-- Student Number Field -->
+            <div class="input-group">
+                <label for="studentNumber">Student Number</label>
+                <div class="input-field-wrapper">
+                    <i class="fa-solid fa-id-card"></i>
+                    <input type="text" id="studentNumber" placeholder="e.g., CA202306112" required>
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="input-field-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fa-solid fa-right-to-bracket"></i> Secure Login
+            </button>
+        </form>
+
+        <div class="demo-credentials">
+            <strong>Demo Account:</strong><br>
+            Name: <code>Jan Cristan Deangkinay</code> | No: <code>CA202306112</code> | Pass: <code>password123</code>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('errorMsg');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.style.display = 'none';
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const studentNumber = document.getElementById('studentNumber').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, studentNumber, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Masisave ang pangalan at student number sa localStorage para magamit sa queue request
+                    localStorage.setItem('studentName', fullName || data.user.name);
+                    localStorage.setItem('studentNumber', data.user.studentNumber);
+                    
+                    window.location.href = 'request.html';
+                } else {
+                    errorMsg.innerText = data.error || "Invalid credentials provided.";
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Login Error:", err);
+                errorMsg.innerText = "Unable to connect to the server.";
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

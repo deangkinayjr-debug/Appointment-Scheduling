@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICCT Registrar - Staff Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root {
+            --primary: #004080;
+            --primary-hover: #003366;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --border-color: #cbd5e1;
+            --success: #10b981;
+            --success-hover: #059669;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 850px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin: 0 0 8px 0;
+            font-size: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .section-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .section-box h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        input[type="text"], input[type="number"], select {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            height: 41px;
+        }
+
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        li {
+            background: #f8fafc;
+            margin-bottom: 12px;
+            padding: 16px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-claimed {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .btn-claimed:hover { background: var(--success-hover); }
+
+        .btn-logout {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-logout:hover { background: #475569; }
+
+        .empty-state { text-align: center; color: #94a3b8; padding: 20px; font-style: italic; }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .time-slot-item {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 10px 14px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .time-slot-item span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+        }
+        .time-slot-item input {
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>
+            <span><i class="fa-solid fa-desktop"></i> Registrar Staff Dashboard</span>
+            <button class="btn-logout" onclick="logoutAdmin()"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+        </h2>
+        <p class="subtitle">Magtakda ng mga available dates at time slot limits para sa mga estudyante at pamahalaan ang mga naka-queue.</p>
+        
+        <!-- SECTION PARA SA PANGKALAHATANG SLOT -->
+        <div class="section-box">
+            <h3><i class="fa-solid fa-calendar-plus"></i> Magbukas ng Appointment Date / Max Slots</h3>
+            <form id="slotForm" onsubmit="createSlot(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="slotDate">Piliin ang Petsa:</label>
+                        <input type="text" id="slotDate" placeholder="Pumili ng petsa..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="slotLimit">Pangkalahatang Max Limit:</label>
+                        <input type="number" id="slotLimit" value="50" min="1" required>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> I-save ang Petsa</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- SECTION PARA SA BAWAT ORAS NA LIMIT (TIME SLOTS) -->
+        <div class="section-box" id="timeLimitsBox" style="display: none;">
+            <h3><i class="fa-solid fa-clock"></i> Itakda ang Limit kada Oras para sa Napiling Petsa</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0;">Ilagay ang maximum na bilang ng estudyante na pwedeng mag-book sa bawat oras.</p>
+            
+            <div class="time-slots-grid" id="timeSlotsContainer">
+                <!-- Dito ilalagay automatically ang oras gamit ang JS -->
+            </div>
+            
+            <button type="button" class="btn-primary" onclick="saveTimeLimits()"><i class="fa-solid fa-save"></i> I-save ang Time Limits</button>
+        </div>
+
+        <h3 style="color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-users-line"></i> Active Student Queue</h3>
+        <ul id="queueList">
+            <div class="empty-state">Loading queue data...</div>
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
+            alert("Unauthorized access! Please log in as Registrar Staff first.");
+            window.location.href = 'admin-login.html';
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('isAdminLoggedIn');
+            window.location.href = 'admin-login.html';
+        }
+
+        const standardHours = [
+            "9:00 AM - 10:00 AM",
+            "10:00 AM - 11:00 AM",
+            "11:00 AM - 12:00 NN",
+            "1:00 PM - 2:00 PM",
+            "2:00 PM - 3:00 PM",
+            "3:00 PM - 4:00 PM",
+            "4:00 PM - 5:00 PM",
+            "5:00 PM - 6:00 PM"
+        ];
+
+        // I-initialize ang Flatpickr para sa format na YYYY-MM-DD
+        flatpickr("#slotDate", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            onChange: function(selectedDates, dateStr) {
+                loadExistingTimeLimits(dateStr);
+            }
+        });
+
+        function renderTimeSlots(savedLimits = {}) {
+            const container = document.getElementById('timeSlotsContainer');
+            container.innerHTML = '';
+            
+            standardHours.forEach((hour, index) => {
+                const currentLimit = savedLimits[hour] !== undefined ? savedLimits[hour] : 10;
+                const div = document.createElement('div');
+                div.className = 'time-slot-item';
+                div.innerHTML = `
+                    <span>${hour}</span>
+                    <input type="number" id="hour_limit_${index}" data-hour="${hour}" value="${currentLimit}" min="0">
+                `;
+                container.appendChild(div);
+            });
+            document.getElementById('timeLimitsBox').style.display = 'block';
+        }
+
+        async function loadExistingTimeLimits(dateOverride = null) {
+            const date = dateOverride || document.getElementById('slotDate').value;
+            if (!date) return;
+
+            try {
+                const response = await fetch(`/api/time-limits/${date}`);
+                const limits = await response.json();
+                renderTimeSlots(limits);
+            } catch (err) {
+                console.error("Error loading time limits:", err);
+                renderTimeSlots({});
+            }
+        }
+
+        async function createSlot(event) {
+            event.preventDefault();
+            const date = document.getElementById('slotDate').value;
+            const limit = document.getElementById('slotLimit').value;
+
+            try {
+                const response = await fetch('/api/slots', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, limit })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert("Tagumpay na naidagdag ang available slot para sa petsang: " + date);
+                    loadExistingTimeLimits(date);
+                } else {
+                    alert(result.error || "May error sa paggawa ng slot.");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Hindi maka-connect sa server.");
+            }
+        }
+
+        async function saveTimeLimits() {
+            const date = document.getElementById('slotDate').value;
+            if (!date) {
+                alert("Mangyaring pumili muna ng petsa.");
+                return;
+            }
+
+            const limits = {};
+            standardHours.forEach((hour, index) => {
+                const inputVal = document.getElementById(`hour_limit_${index}`).value;
+                limits[hour] = parseInt(inputVal) || 0;
+            });
+
+            try {
+                const response = await fetch('/api/staff/set-time-limits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, limits })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert("Matagumpay na na-save ang time slot limits!");
+                } else {
+                    alert(result.error || "May error sa pag-save.");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Hindi maka-connect sa server.");
+            }
+        }
+
+        async function fetchQueue() {
+            try {
+                const response = await fetch('/api/appointments');
+                const appointments = await response.json();
+                const list = document.getElementById('queueList');
+                list.innerHTML = '';
+
+                if (appointments.length === 0) {
+                    list.innerHTML = '<div class="empty-state">Wala pang nakapila o nag-book sa kasalukuyan.</div>';
+                    return;
+                }
+
+                appointments.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div>
+                            <strong style="font-size: 1.05rem; color: #1e293b;">${item.name}</strong> <br>
+                            <span style="color: #64748b; font-size: 0.85rem;"><i class="fa-solid fa-file-lines"></i> ${item.service}</span> &bull; 
+                            <span style="color: var(--primary); font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-calendar"></i> Binalak Kunin: ${item.targetDate || 'Hindi tinukoy'} (${item.targetTime || 'Oras di-tukoy'})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select onchange="updateStatus('${item.id}', this.value)">
+                                <option value="Waiting" ${item.status === 'Waiting' ? 'selected' : ''}>Waiting</option>
+                                <option value="Ready for Pickup" ${item.status === 'Ready for Pickup' ? 'selected' : ''}>Ready for Pickup</option>
+                            </select>
+                            <button class="btn-claimed" onclick="markAsClaimed('${item.id}', '${item.name}')">
+                                <i class="fa-solid fa-check"></i> Claimed
+                            </button>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                console.error("Error fetching queue:", err);
+            }
+        }
+
+        async function updateStatus(id, newStatus) {
+            try {
+                await fetch(`/api/appointments/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                fetchQueue();
+            } catch (err) { console.error(err); }
+        }
+
+        async function markAsClaimed(id, studentName) {
+            if (!confirm(`Mark document for ${studentName} as Claimed and finish transaction?`)) return;
+            try {
+                await fetch(`/api/appointments/${id}`, { method: 'DELETE' });
+                fetchQueue();
+            } catch (err) { console.error(err); }
+        }
+
+        fetchQueue();
+        setInterval(fetchQueue, 3000);
+    </script>
+</body>
+</html>

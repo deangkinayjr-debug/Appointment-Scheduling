@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ICCT Registrar - Staff Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #343a40; margin: 0; padding: 40px; display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center; }
+        h2 { color: #343a40; margin-bottom: 10px; }
+        input, button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 5px; border: 1px solid #ccc; font-size: 1rem; box-sizing: border-box; }
+        button { background: #dc3545; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background: #c82333; }
+        .error { color: red; font-size: 0.85rem; margin-top: 10px; display: none; }
+        .nav-link { display: block; margin-top: 20px; color: #007bff; font-size: 0.9rem; text-decoration: none; }
+        .nav-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Registrar Staff Portal</h2>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Mag-log in gamit ang Admin Credentials.</p>
+        
+        <form id="adminLoginForm">
+            <input type="text" id="adminUser" placeholder="Username (Hal. registrar)" required>
+            <input type="password" id="adminPass" placeholder="Password (Hal. icct123)" required>
+            <button type="submit">Mag-log in bilang Staff</button>
+            <p id="errorMsg" class="error">Maling username o password!</p>
+        </form>
+
+        <a href="index.html" class="nav-link">&larr; Bumalik sa Student Portal</a>
+    </div>
+
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+
+            // Simple hardcoded check para sa demo (Pwede mong baguhin ang username/password)
+            if (user === 'registrar admin' && pass === 'icct1245') {
+                // I-save ang session na naka-login na ang admin
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                // Diretso sa secure staff dashboard
+                window.location.href = 'staff.html';
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
