@@ -201,6 +201,9 @@
                     <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
                     <option value="Honorable Dismissal">Honorable Dismissal</option>
                     <option value="Authentication of Documents">Authentication of Documents</option>
+                    <option value="Certificate of Enrollment">Certificate of Enrollment</option>
+                    <option value="Certification of Grades">Certification of Grades</option>
+                    <option value="Summary of Grades">Summary of Grades</option>
                 </select>
             </div>
 
@@ -225,10 +228,19 @@
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        // ==========================================
-        // SCRIPT SECTION - FULL LOGIC PRESERVED
-        // ==========================================
         let enabledDates = [];
+
+        // Auto-fill user info kung galing sa login
+        window.addEventListener('DOMContentLoaded', () => {
+            const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
+            if (loggedUser.name) {
+                document.getElementById('fullName').value = loggedUser.name;
+            }
+            if (loggedUser.email) {
+                document.getElementById('email').value = loggedUser.email;
+            }
+            fetchAvailableSlots();
+        });
 
         async function fetchAvailableSlots() {
             try {
@@ -236,7 +248,6 @@
                 const slots = await response.json();
                 enabledDates = slots.map(s => s.date);
 
-                // I-initialize ang Flatpickr gamit ang mga pinahintulutang petsa mula sa server
                 flatpickr("#targetDate", {
                     dateFormat: "Y-m-d",
                     enable: enabledDates,
@@ -255,22 +266,32 @@
             timeSelect.innerHTML = '<option value="" disabled selected>Loading time slots...</option>';
 
             try {
-                const response = await fetch(`/api/available-time-slots/${date}`);
-                const data = await response.json();
+                // Nakakonekta na ngayon sa tamang backend route na /api/slot-status/${date}
+                const response = await fetch(`/api/slot-status/${date}`);
+                const slotStatus = await response.json();
 
                 timeSelect.innerHTML = '<option value="" disabled selected>Select available time slot...</option>';
                 
-                if (data.availableSlots && data.availableSlots.length > 0) {
-                    data.availableSlots.forEach(slot => {
-                        const opt = document.createElement('option');
-                        opt.value = slot;
-                        opt.textContent = slot;
-                        timeSelect.appendChild(opt);
-                    });
-                } else {
+                let hasAvailable = false;
+
+                for (const [timeSlot, info] of Object.entries(slotStatus)) {
+                    const opt = document.createElement('option');
+                    opt.value = timeSlot;
+                    
+                    if (info.isFull) {
+                        opt.textContent = `${timeSlot} (Fully Booked - ${info.booked}/${info.limit})`;
+                        opt.disabled = true;
+                    } else {
+                        opt.textContent = `${timeSlot} (${info.booked}/${info.limit} booked)`;
+                        hasAvailable = true;
+                    }
+                    timeSelect.appendChild(opt);
+                }
+
+                if (!hasAvailable && Object.keys(slotStatus).length > 0) {
                     const opt = document.createElement('option');
                     opt.disabled = true;
-                    opt.textContent = "Fully booked for this date";
+                    opt.textContent = "All time slots are fully booked for this date";
                     timeSelect.appendChild(opt);
                 }
             } catch (err) {
@@ -278,9 +299,6 @@
                 timeSelect.innerHTML = '<option value="" disabled selected>Failed to load time slots</option>';
             }
         }
-
-        // Patakbuhin ang pag-fetch ng mga slot sa pagsisimula ng pahina
-        fetchAvailableSlots();
 
         async function submitAppointment(event) {
             event.preventDefault();
@@ -301,8 +319,8 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert("Appointment successfully booked! Your e-Ticket code is: " + result.ticketCode);
-                    window.location.href = `ticket.html?code=${result.ticketCode}`;
+                    alert("Appointment successfully booked! Your e-Ticket code is: " + (result.id || result.ticketCode));
+                    window.location.href = `ticket.html?code=${result.id || result.ticketCode}`;
                 } else {
                     alert(result.error || "Failed to book appointment.");
                 }
