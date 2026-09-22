@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal Login | Queueing System</title>
+    <title>ICCT Registrar - Student Login</title>
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -19,14 +19,16 @@
         body {
             min-height: 100vh;
             background: #0f172a;
+            color: #f8fafc;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            padding: 20px;
             position: relative;
+            overflow-x: hidden;
         }
 
-        /* Unique Glowing Background Orbs */
+        /* Glowing Background Orbs */
         .bg-blob-1, .bg-blob-2 {
             position: absolute;
             width: 400px;
@@ -34,20 +36,21 @@
             border-radius: 50%;
             filter: blur(80px);
             z-index: 0;
-            opacity: 0.5;
+            opacity: 0.4;
             animation: float 10s infinite alternate ease-in-out;
+            pointer-events: none;
         }
 
         .bg-blob-1 {
             background: #6366f1;
-            top: -100px;
-            left: -100px;
+            top: -50px;
+            left: -50px;
         }
 
         .bg-blob-2 {
             background: #ec4899;
-            bottom: -100px;
-            right: -100px;
+            bottom: -50px;
+            right: -50px;
             animation-delay: -5s;
         }
 
@@ -57,70 +60,64 @@
         }
 
         /* Glassmorphism Card Container */
-        .login-container {
+        .card {
             position: relative;
             z-index: 1;
-            width: 100%;
-            max-width: 420px;
-            padding: 40px 30px;
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
+            padding: 35px 30px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.8s ease-out;
+            width: 100%;
+            max-width: 420px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .login-header {
+        .header-container {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
 
-        .logo-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            border-radius: 20px;
+        .logo-badge {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin: 0 auto 16px;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            font-size: 1.5rem;
             box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5);
-            color: #ffffff;
-            font-size: 28px;
         }
 
-        .login-header h1 {
+        h2 {
             color: #f8fafc;
-            font-size: 24px;
-            font-weight: 700;
+            margin: 0 0 6px 0;
+            font-size: 1.5rem;
+            font-weight: 800;
             letter-spacing: -0.5px;
-            margin-bottom: 6px;
         }
 
-        .login-header p {
+        p.subtitle {
             color: #94a3b8;
-            font-size: 14px;
-            font-weight: 400;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
-        /* Form Inputs */
         .input-group {
-            margin-bottom: 20px;
+            position: relative;
+            margin-bottom: 18px;
         }
 
         .input-group label {
             display: block;
-            color: #cbd5e1;
-            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+            color: #cbd5e1;
         }
 
         .input-field-wrapper {
@@ -129,150 +126,193 @@
 
         .input-field-wrapper i {
             position: absolute;
-            left: 16px;
             top: 50%;
+            left: 15px;
             transform: translateY(-50%);
-            color: #64748b;
-            font-size: 16px;
-            transition: color 0.3s;
+            color: #94a3b8;
         }
 
-        .input-field-wrapper input {
+        input {
             width: 100%;
-            padding: 14px 16px 14px 48px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 15px 12px 42px;
             border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: rgba(15, 23, 42, 0.6);
             color: #f8fafc;
-            font-size: 14px;
             outline: none;
             transition: all 0.3s ease;
         }
 
-        .input-field-wrapper input::placeholder {
+        input::placeholder {
             color: #64748b;
         }
 
-        .input-field-wrapper input:focus {
+        input:focus {
             border-color: #6366f1;
-            background: rgba(15, 23, 42, 0.9);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background-color: rgba(15, 23, 42, 0.9);
         }
 
-        .input-field-wrapper input:focus + i {
-            color: #6366f1;
-        }
-
-        /* Submit Button */
-        .btn-submit {
+        button.submit-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            border: none;
+            margin-top: 5px;
             border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             color: white;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5);
             transition: all 0.3s ease;
-            margin-top: 10px;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .btn-submit:hover {
+        button.submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.6);
         }
 
-        .btn-submit:active {
-            transform: translateY(0);
+        button.submit-btn:active {
+            transform: scale(0.98);
         }
 
-        /* Demo Account Box */
-        .demo-box {
-            margin-top: 25px;
-            padding: 14px;
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+        #errorMsg {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            margin-bottom: 18px;
+            display: none;
             text-align: center;
         }
 
-        .demo-box span {
-            display: block;
+        .demo-credentials {
+            margin-top: 22px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 0.78rem;
             color: #94a3b8;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-            margin-bottom: 4px;
+            text-align: center;
+            line-height: 1.5;
         }
 
-        .demo-box p {
+        .demo-credentials strong {
             color: #cbd5e1;
-            font-size: 12px;
-            line-height: 1.4;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .login-container {
-                margin: 20px;
-                padding: 30px 20px;
-            }
+        .demo-credentials code {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #38bdf8;
         }
     </style>
 </head>
 <body>
 
+    <!-- Background Glow Blobs -->
     <div class="bg-blob-1"></div>
     <div class="bg-blob-2"></div>
 
-    <div class="login-container">
-        <div class="login-header">
-            <div class="logo-icon">
+    <div class="card">
+        <div class="header-container">
+            <div class="logo-badge">
                 <i class="fa-solid fa-graduation-cap"></i>
             </div>
-            <h1>Student Portal</h1>
-            <p>Queueing & Appointment System</p>
+            <h2>Student Portal</h2>
+            <p class="subtitle">ICCT Registrar Queueing System</p>
         </div>
 
-        <!-- Siguraduhing tugma ang form action o JavaScript event listener mo rito -->
+        <div id="errorMsg"></div>
+        
         <form id="loginForm">
+            <!-- Full Name Field -->
             <div class="input-group">
                 <label for="fullName">Buong Pangalan</label>
                 <div class="input-field-wrapper">
-                    <input type="text" id="fullName" placeholder="e.g., Jan Cristan Deangkinay" required>
                     <i class="fa-solid fa-user"></i>
+                    <input type="text" id="fullName" placeholder="e.g., Jan Cristan Deangkinay" required>
                 </div>
             </div>
 
+            <!-- Student Number Field -->
             <div class="input-group">
                 <label for="studentNumber">Student Number</label>
                 <div class="input-field-wrapper">
+                    <i class="fa-solid id-card fa-id-card"></i>
                     <input type="text" id="studentNumber" placeholder="e.g., CA202306112" required>
-                    <i class="fa-solid fa-id-card"></i>
                 </div>
             </div>
 
+            <!-- Password Field -->
             <div class="input-group">
                 <label for="password">Password</label>
                 <div class="input-field-wrapper">
-                    <input type="password" id="password" placeholder="••••••••" required>
                     <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="••••••••" required>
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit">
-                <i class="fa-solid fa-arrow-right-to-bracket" style="margin-right: 8px;"></i> Secure Login
+            <button type="submit" class="submit-btn">
+                <i class="fa-solid fa-right-to-bracket"></i> Secure Login
             </button>
         </form>
 
-        <div class="demo-box">
-            <span>Demo Account</span>
-            <p><strong>Name:</strong> Jan Cristan Deangkinay<br><strong>No:</strong> CA202306112 | <strong>Pass:</strong> password123</p>
+        <div class="demo-credentials">
+            <strong>DEMO ACCOUNT</strong><br>
+            Name: <span>Jan Cristan Deangkinay</span><br>
+            No: <code>CA202306112</code> | Pass: <code>password123</code>
         </div>
     </div>
 
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('errorMsg');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.style.display = 'none';
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const studentNumber = document.getElementById('studentNumber').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, studentNumber, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Masisave ang pangalan at student number sa localStorage para magamit sa queue request
+                    localStorage.setItem('studentName', fullName || data.user.name);
+                    localStorage.setItem('studentNumber', data.user.studentNumber);
+                    
+                    window.location.href = 'request.html';
+                } else {
+                    errorMsg.innerText = data.error || "Invalid credentials provided.";
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Login Error:", err);
+                errorMsg.innerText = "Unable to connect to the server.";
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
