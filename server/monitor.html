@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICCT Registrar Live Queue Monitor</title>
+    <title>ICCT Registrar - Live Queue Monitor</title>
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -20,202 +20,185 @@
             min-height: 100vh;
             background: #0f172a;
             color: #f8fafc;
-            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            padding: 40px 20px;
             position: relative;
+            overflow-x: hidden;
         }
 
-        /* Glowing Background Orbs (Para pareho sa login page) */
+        /* Glowing Background Orbs */
         .bg-blob-1, .bg-blob-2 {
             position: absolute;
-            width: 400px;
-            height: 400px;
+            width: 500px;
+            height: 500px;
             border-radius: 50%;
-            filter: blur(80px);
+            filter: blur(100px);
             z-index: 0;
-            opacity: 0.4;
+            opacity: 0.35;
             animation: float 10s infinite alternate ease-in-out;
             pointer-events: none;
         }
 
         .bg-blob-1 {
             background: #6366f1;
-            top: -50px;
-            left: -50px;
+            top: -100px;
+            left: -100px;
         }
 
         .bg-blob-2 {
             background: #ec4899;
-            bottom: -50px;
-            right: -50px;
+            bottom: -100px;
+            right: -100px;
             animation-delay: -5s;
         }
 
         @keyframes float {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 50px) scale(1.1); }
+            100% { transform: translate(40px, 60px) scale(1.1); }
         }
 
-        /* Header Styles */
+        /* Header Styling */
         .monitor-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             position: relative;
             z-index: 1;
         }
 
         .monitor-header h1 {
-            font-size: 28px;
+            font-size: 2rem;
             font-weight: 800;
             color: #f8fafc;
-            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
+            margin-bottom: 8px;
             letter-spacing: -0.5px;
-        }
-
-        .monitor-header h1 i {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
         .monitor-header p {
             color: #94a3b8;
-            font-size: 14px;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
-        /* Dashboard Grid Layout */
+        /* Layout Grid for Monitor Columns */
         .monitor-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 25px;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
             position: relative;
             z-index: 1;
         }
 
-        /* Glassmorphism Card Container */
-        .queue-card-container {
+        /* Glassmorphism Column Box */
+        .monitor-column {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            padding: 28px;
+            padding: 25px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            min-height: 480px;
+            min-height: 500px;
             display: flex;
             flex-direction: column;
         }
 
         .column-title {
-            font-size: 16px;
+            font-size: 1.15rem;
             font-weight: 700;
+            padding-bottom: 15px;
             margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             align-items: center;
             gap: 10px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .waiting-title { color: #f59e0b; }
-        .ready-title { color: #10b981; }
+        .waiting-title { color: #fbbf24; }
+        .ready-title { color: #34d399; }
 
-        /* List Items / Ticket Cards */
+        /* Queue Card Items */
         .queue-list {
+            list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 15px;
             flex-grow: 1;
         }
 
         .queue-item {
             background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
-            padding: 18px;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
-
-        .queue-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-        }
-
-        .queue-item.waiting::before { background: #f59e0b; }
-        .queue-item.ready::before { background: #10b981; }
 
         .queue-item:hover {
+            background: rgba(15, 23, 42, 0.85);
+            border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.15);
-            background: rgba(15, 23, 42, 0.8);
         }
 
-        .student-name {
-            font-size: 16px;
+        .queue-info h3 {
+            font-size: 1.1rem;
             font-weight: 700;
             color: #f8fafc;
             margin-bottom: 6px;
         }
 
-        .service-type {
-            font-size: 13px;
+        .queue-info p {
+            font-size: 0.85rem;
             color: #94a3b8;
-            margin-bottom: 14px;
             display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .meta-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .window-badge {
-            background: rgba(99, 102, 241, 0.15);
-            color: #818cf8;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 10px;
-            display: inline-flex;
             align-items: center;
             gap: 6px;
         }
 
-        .status-badge {
-            font-size: 11px;
+        /* Status Badges & Window Tag */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 6px 10px;
-            border-radius: 8px;
         }
 
-        .status-badge.waiting {
-            background: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
+        .badge-waiting {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
         }
 
-        .status-badge.ready {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
+        .badge-ready {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .window-tag {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
         }
 
         /* Empty State */
@@ -227,64 +210,127 @@
             flex-grow: 1;
             color: #64748b;
             text-align: center;
-            font-size: 14px;
             gap: 12px;
+            font-style: italic;
+            font-size: 0.9rem;
         }
 
         .empty-state i {
-            font-size: 36px;
-            opacity: 0.4;
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 20px 12px; }
-            .monitor-grid { grid-template-columns: 1fr; }
+            font-size: 2.5rem;
+            color: #475569;
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Glow Effects -->
+    <!-- Background Glow Blobs -->
     <div class="bg-blob-1"></div>
     <div class="bg-blob-2"></div>
 
     <div class="monitor-header">
-        <h1><i class="fa-solid fa-display"></i> ICCT Registrar Live Queue Monitor</h1>
+        <h1><i class="fa-solid fa-desktop" style="color: #818cf8;"></i> ICCT Registrar Live Queue Monitor</h1>
         <p>Real-time display of active student queues and assigned service windows.</p>
     </div>
 
     <div class="monitor-grid">
         <!-- Waiting Queue Column -->
-        <div class="queue-card-container">
+        <div class="monitor-column">
             <div class="column-title waiting-title">
                 <i class="fa-solid fa-clock"></i> Waiting Queue
             </div>
-            <div id="waitingQueueList" class="queue-list">
-                <!-- Halimbawa ng item (magagamit din kung saan nakakabit ang JS mo) -->
-                <div class="queue-item waiting">
-                    <div class="student-name">Juan Dela Cruz</div>
-                    <div class="service-type"><i class="fa-solid fa-file-lines"></i> Transcript of Records (TOR)</div>
-                    <div class="meta-info">
-                        <span class="window-badge"><i class="fa-solid fa-desktop"></i> Window 3</span>
-                        <span class="status-badge waiting">Waiting</span>
-                    </div>
+            <ul id="waitingList" class="queue-list">
+                <div class="empty-state">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Loading waiting queue...
                 </div>
-            </div>
+            </ul>
         </div>
 
         <!-- Ready for Pickup Column -->
-        <div class="queue-card-container">
+        <div class="monitor-column">
             <div class="column-title ready-title">
                 <i class="fa-solid fa-circle-check"></i> Ready for Pickup
             </div>
-            <div id="readyQueueList" class="queue-list">
+            <ul id="readyList" class="queue-list">
                 <div class="empty-state">
                     <i class="fa-solid fa-folder-open"></i>
-                    <span>No documents ready for pickup.</span>
+                    No documents ready for pickup.
                 </div>
-            </div>
+            </ul>
         </div>
     </div>
 
+    <script>
+        async function fetchMonitorData() {
+            try {
+                const response = await fetch('/api/appointments');
+                const appointments = await response.json();
+
+                const waitingList = document.getElementById('waitingList');
+                const readyList = document.getElementById('readyList');
+
+                waitingList.innerHTML = '';
+                readyList.innerHTML = '';
+
+                // Salain ang mga naka-waiting at ready for pickup
+                const waitingItems = appointments.filter(item => !item.status || item.status === 'Waiting');
+                const readyItems = appointments.filter(item => item.status === 'Ready for Pickup');
+
+                // Render Waiting Queue
+                if (waitingItems.length === 0) {
+                    waitingList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-solid fa-mug-hot"></i>
+                            Wala pang nakapila sa kasalukuyan.
+                        </div>`;
+                } else {
+                    waitingItems.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'queue-item';
+                        li.innerHTML = `
+                            <div class="queue-info">
+                                <h3>${item.name}</h3>
+                                <p><i class="fa-solid fa-file-lines"></i> ${item.service}</p>
+                                ${item.window ? `<div class="window-tag"><i class="fa-solid fa-desktop"></i> ${item.window}</div>` : ''}
+                            </div>
+                            <span class="badge badge-waiting">Waiting</span>
+                        `;
+                        waitingList.appendChild(li);
+                    });
+                }
+
+                // Render Ready for Pickup
+                if (readyItems.length === 0) {
+                    readyList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-solid fa-folder-open"></i>
+                            No documents ready for pickup.
+                        </div>`;
+                } else {
+                    readyItems.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'queue-item';
+                        li.innerHTML = `
+                            <div class="queue-info">
+                                <h3>${item.name}</h3>
+                                <p><i class="fa-solid fa-file-lines"></i> ${item.service}</p>
+                                ${item.window ? `<div class="window-tag"><i class="fa-solid fa-desktop"></i> ${item.window}</div>` : ''}
+                            </div>
+                            <span class="badge badge-ready">Ready</span>
+                        `;
+                        readyList.appendChild(li);
+                    });
+                }
+
+            } catch (err) {
+                console.error("Error fetching monitor queue:", err);
+            }
+        }
+
+        // Tawagin agad at i-set ang auto-refresh kada 3 segundo
+        fetchMonitorData();
+        setInterval(fetchMonitorData, 3000);
+    </script>
 </body>
 </html>
