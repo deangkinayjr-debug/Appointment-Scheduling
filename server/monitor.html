@@ -1,236 +1,247 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICCT Registrar - Live Queue Monitor</title>
-    <!-- Google Fonts & FontAwesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>ICCT Registrar Live Queue Monitor</title>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --card-dark: #1e293b;
-            --border-dark: #334155;
-            --accent-blue: #38bdf8;
-            --success-green: #22c55e;
-            --warning-orange: #f59e0b;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            color: #f8fafc;
-            margin: 0;
-            padding: 30px;
-            text-align: center;
             min-height: 100vh;
-            box-sizing: border-box;
-        }
-
-        .header-container {
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            color: var(--accent-blue);
-            margin: 0 0 8px 0;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        p.subtitle {
-            color: #94a3b8;
-            font-size: 1rem;
-            margin: 0;
-        }
-
-        .container {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 30px 20px;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header Styles */
+        .monitor-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .monitor-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        .column {
-            background: var(--card-dark);
-            padding: 25px;
-            border-radius: 16px;
+        .monitor-header p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Dashboard Grid Layout */
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
             width: 100%;
-            max-width: 500px;
-            min-height: 450px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-dark);
-            box-sizing: border-box;
-            text-align: left;
+            max-width: 1100px;
         }
 
-        .column h2 {
-            border-bottom: 2px solid var(--border-dark);
-            padding-bottom: 12px;
-            margin-top: 0;
-            color: #f1f5f9;
-            font-size: 1.25rem;
+        /* Column Card Container */
+        .queue-card-container {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .ticket-card {
-            background: #273548;
-            padding: 16px 20px;
-            margin: 15px 0;
-            border-radius: 10px;
+        .waiting-title { color: #f59e0b; }
+        .ready-title { color: #10b981; }
+
+        /* List Items / Ticket Cards */
+        .queue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex-grow: 1;
+        }
+
+        .queue-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .queue-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: #6366f1;
+        }
+
+        .queue-item.waiting::before { background: #f59e0b; }
+        .queue-item.ready::before { background: #10b981; }
+
+        .queue-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .student-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 6px;
+        }
+
+        .service-type {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 5px solid var(--warning-orange);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
-        .ticket-card.ready {
-            border-left-color: var(--success-green);
-            background: #143024;
-        }
-
-        .badge {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--warning-orange);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .badge-ready {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success-green);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-
-        .window-tag {
+        .window-badge {
             background: rgba(56, 189, 248, 0.15);
-            color: var(--accent-blue);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            color: #38bdf8;
+            font-size: 12px;
             font-weight: 600;
-            margin-top: 8px;
+            padding: 4px 10px;
+            border-radius: 8px;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            gap: 6px;
         }
 
-        .window-tag.ready-tag {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success-green);
-            border-color: rgba(34, 197, 94, 0.3);
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            border-radius: 6px;
         }
 
+        .status-badge.waiting {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .status-badge.ready {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        /* Empty State */
         .empty-state {
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
             color: #64748b;
-            padding: 50px 20px;
-            font-style: italic;
+            text-align: center;
+            font-size: 14px;
+            gap: 10px;
+        }
+
+        .empty-state i {
+            font-size: 32px;
+            margin-bottom: 4px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 15px 10px; }
+            .monitor-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <h1><i class="fa-solid fa-tv"></i> ICCT Registrar Live Queue Monitor</h1>
-        <p class="subtitle">Real-time display of active student queues and assigned service windows.</p>
+    <div class="monitor-header">
+        <h1><i class="fa-solid fa-display"></i> ICCT Registrar Live Queue Monitor</h1>
+        <p>Real-time display of active student queues and assigned service windows.</p>
     </div>
 
-    <div class="container">
-        <!-- Waiting Column -->
-        <div class="column">
-            <h2><i class="fa-solid fa-clock" style="color: var(--warning-orange);"></i> Waiting Queue</h2>
-            <div id="waitingList">
-                <div class="empty-state">Loading waiting queue...</div>
+    <div class="monitor-grid">
+        <!-- Waiting Queue Column -->
+        <div class="queue-card-container">
+            <div class="column-title waiting-title">
+                <i class="fa-solid fa-clock"></i> Waiting Queue
+            </div>
+            <!-- Dito nagre-render ang active/waiting items mula sa iyong JS script -->
+            <div id="waitingQueueList" class="queue-list">
+                <!-- Halimbawa ng itsura kapag may laman (pwedeng palitan o i-retain ang existing JS logic mo) -->
+                <div class="queue-item waiting">
+                    <div class="student-name">Juan Dela Cruz</div>
+                    <div class="service-type"><i class="fa-solid fa-file-lines"></i> Transcript of Records (TOR)</div>
+                    <div class="meta-info">
+                        <span class="window-badge"><i class="fa-solid fa-desktop"></i> Window 3</span>
+                        <span class="status-badge waiting">Waiting</span>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Ready for Pickup Column -->
-        <div class="column">
-            <h2><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> Ready for Pickup</h2>
-            <div id="readyList">
-                <div class="empty-state">Loading ready queue...</div>
+        <div class="queue-card-container">
+            <div class="column-title ready-title">
+                <i class="fa-solid fa-circle-check"></i> Ready for Pickup
+            </div>
+            <!-- Dito nagre-render ang ready items mula sa iyong JS script -->
+            <div id="readyQueueList" class="queue-list">
+                <div class="empty-state">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <span>No documents ready for pickup.</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        async function fetchQueue() {
-            try {
-                const response = await fetch('/api/appointments');
-                const data = await response.json();
-
-                const waitingList = document.getElementById('waitingList');
-                const readyList = document.getElementById('readyList');
-
-                waitingList.innerHTML = '';
-                readyList.innerHTML = '';
-
-                if (data.length === 0) {
-                    waitingList.innerHTML = '<div class="empty-state">No active queues found.</div>';
-                    readyList.innerHTML = '<div class="empty-state">No documents ready for pickup.</div>';
-                    return;
-                }
-
-                let waitingCount = 0;
-                let readyCount = 0;
-
-                data.forEach(item => {
-                    const card = document.createElement('div');
-                    const windowName = item.window || 'Window 3';
-
-                    if (item.status === 'Waiting') {
-                        waitingCount++;
-                        card.className = 'ticket-card';
-                        card.innerHTML = `
-                            <div>
-                                <strong style="font-size: 1.1rem; color: #f8fafc;">${item.name}</strong><br>
-                                <span style="font-size: 0.85rem; color: #94a3b8;"><i class="fa-solid fa-file-lines"></i> ${item.service}</span><br>
-                                <span class="window-tag"><i class="fa-solid fa-window-maximize"></i> ${windowName}</span>
-                            </div>
-                            <span class="badge">Waiting</span>
-                        `;
-                        waitingList.appendChild(card);
-                    } else if (item.status === 'Ready for Pickup') {
-                        readyCount++;
-                        card.className = 'ticket-card ready';
-                        card.innerHTML = `
-                            <div>
-                                <strong style="font-size: 1.1rem; color: #f8fafc;">${item.name}</strong><br>
-                                <span style="font-size: 0.85rem; color: #94a3b8;"><i class="fa-solid fa-file-lines"></i> ${item.service}</span><br>
-                                <span class="window-tag ready-tag"><i class="fa-solid fa-window-maximize"></i> ${windowName}</span>
-                            </div>
-                            <span class="badge badge-ready">Ready</span>
-                        `;
-                        readyList.appendChild(card);
-                    }
-                });
-
-                if (waitingCount === 0) {
-                    waitingList.innerHTML = '<div class="empty-state">No active queues found.</div>';
-                }
-                if (readyCount === 0) {
-                    readyList.innerHTML = '<div class="empty-state">No documents ready for pickup.</div>';
-                }
-
-            } catch (err) {
-                console.error("Error fetching queue:", err);
-            }
-        }
-
-        // Auto refresh every 2 seconds for real-time update
-        setInterval(fetchQueue, 2000);
-        fetchQueue();
-    </script>
 </body>
 </html>
