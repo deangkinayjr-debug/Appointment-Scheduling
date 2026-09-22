@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -60,68 +62,59 @@
         }
 
         /* Glassmorphism Card Container */
-        .card {
+        .container {
+            max-width: 540px;
+            width: 100%;
+            margin: auto;
             position: relative;
             z-index: 1;
+        }
+
+        .card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            padding: 35px 30px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 520px;
+            overflow: hidden;
         }
 
-        .header-container {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
+        .card-header {
+            background: transparent;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            padding: 30px 20px 20px 20px;
         }
 
-        .header-container h2 {
+        .card-header h3 {
             color: #f8fafc;
             margin: 0 0 6px 0;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 800;
             letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
-        .header-container h2 i {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p.subtitle {
+        .card-header p {
             color: #94a3b8;
             font-size: 0.85rem;
             font-weight: 500;
+            margin: 0;
         }
 
-        .input-group {
-            position: relative;
-            margin-bottom: 18px;
+        .card-body {
+            padding: 30px;
         }
 
-        .input-group label {
+        .form-label {
             display: block;
             font-weight: 600;
             font-size: 0.82rem;
             margin-bottom: 6px;
             color: #cbd5e1;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
-        input, select {
+        .form-control, .form-select {
             width: 100%;
             padding: 12px 15px;
             border-radius: 12px;
@@ -134,36 +127,97 @@
             transition: all 0.3s ease;
         }
 
-        input::placeholder {
+        .form-control::placeholder {
             color: #64748b;
         }
 
-        input:focus, select:focus {
+        .form-control:focus, .form-select:focus {
             border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
             background-color: rgba(15, 23, 42, 0.9);
         }
 
-        select option {
+        .form-select option {
             background-color: #0f172a;
             color: #f8fafc;
         }
 
-        .time-slots-container {
-            margin-bottom: 20px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            text-align: center;
-            padding: 10px;
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 10px;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
+        .mb-3 {
+            margin-bottom: 18px !important;
         }
 
-        button.submit-btn {
+        /* Slot Buttons Styling */
+        .btn-slot {
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+            padding: 12px 16px;
+        }
+
+        .btn-slot input[type="radio"] {
+            display: none;
+        }
+
+        .btn-slot.available {
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            background-color: rgba(15, 23, 42, 0.5);
+            cursor: pointer;
+        }
+
+        .btn-slot.available:hover {
+            background-color: rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+        }
+
+        .btn-slot.selected {
+            background-color: #10b981 !important;
+            color: white !important;
+            border-color: #10b981 !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-slot.selected .badge {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+        }
+
+        .btn-slot.full {
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            background-color: rgba(239, 68, 68, 0.1);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .bg-success {
+            background-color: rgba(16, 185, 129, 0.2) !important;
+            color: #34d399 !important;
+        }
+
+        .bg-danger {
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            color: #fca5a5 !important;
+        }
+
+        /* Primary Submit Button */
+        .btn-primary {
             width: 100%;
             padding: 14px;
-            margin-top: 5px;
             border-radius: 12px;
             border: none;
             background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
@@ -173,99 +227,302 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
-        button.submit-btn:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.6);
         }
 
-        .logout-container {
+        /* Ticket Container Styles */
+        #ticketContainer {
+            display: none;
             text-align: center;
             margin-top: 20px;
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 16px;
+            border: 1px dashed rgba(99, 102, 241, 0.4);
         }
 
-        .logout-link {
+        #ticketContainer h4 {
+            color: #34d399;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        #ticketInfo {
+            color: #f8fafc;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .btn-outline-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        /* Log out link */
+        .text-center.mt-3 a {
             color: #fca5a5;
             font-size: 0.85rem;
             font-weight: 600;
-            text-decoration: none;
-            transition: color 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            transition: color 0.2s;
         }
 
-        .logout-link:hover {
+        .text-center.mt-3 a:hover {
             color: #ef4444;
-            text-decoration: underline;
+            text-decoration: underline !important;
+        }
+
+        /* Text muted adjustments */
+        .text-muted {
+            color: #94a3b8 !important;
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Glow Blobs -->
-    <div class="bg-blob-1"></div>
-    <div class="bg-blob-2"></div>
+<!-- Background Glow Blobs -->
+<div class="bg-blob-1"></div>
+<div class="bg-blob-2"></div>
 
+<div class="container">
     <div class="card">
-        <div class="header-container">
-            <h2><i class="fa-solid fa-calendar-check"></i> Mag-book ng Appointment</h2>
-            <p class="subtitle">Piliin ang iyong serbisyo, petsa, at oras</p>
+        <div class="card-header">
+            <h3>Mag-book ng Appointment</h3>
+            <p class="mb-0">Piliin ang iyong serbisyo, petsa, at oras</p>
         </div>
+        <div class="card-body p-4">
+            <form id="appointmentForm">
+                <div class="mb-3">
+                    <label for="nameInput" class="form-label">Buong Pangalan</label>
+                    <input type="text" class="form-control" id="nameInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="emailInput" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="emailInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="serviceSelect" class="form-label">Uri ng Serbisyo</label>
+                    <select class="form-select" id="serviceSelect" required>
+                        <option value="" selected disabled>Pumili ng Serbisyo...</option>
+                        <option value="Transcript of Records (TOR)">Transcript of Records (TOR)</option>
+                        <option value="Diploma">Diploma</option>
+                        <option value="Certificate of Enrollment">Certificate of Enrollment</option>
+                        <option value="Certification of Grades">Certification of Grades</option>
+                        <option value="Summary of Grades">Summary of Grades</option>
+                        <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
+                        <option value="Honorable Dismissal">Honorable Dismissal</option>
+                    </select>
+                </div>
 
-        <form id="bookingForm">
-            <!-- Full Name Field -->
-            <div class="input-group">
-                <label for="fullName"><i class="fa-solid fa-user"></i> Buong Pangalan</label>
-                <input type="text" id="fullName" placeholder="Jan Cristan R. Deangkinay" readonly>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">📅 Pumili ng Petsa ng Pagkuha:</label>
+                    <input type="text" id="datePicker" class="form-control" placeholder="I-click para pumili ng petsa..." required>
+                    <input type="hidden" id="selectedDateInput">
+                </div>
 
-            <!-- Email Address Field -->
-            <div class="input-group">
-                <label for="email"><i class="fa-solid fa-envelope"></i> Email Address</label>
-                <input type="email" id="email" placeholder="jayceeramos307@gmail.com">
-            </div>
+                <div class="mb-3" id="timeSlotGroup" style="display: none;">
+                    <label class="form-label">⏰ Pumili ng Oras:</label>
+                    <div id="timeSlotsContainer"></div>
+                </div>
 
-            <!-- Service Type Field -->
-            <div class="input-group">
-                <label for="serviceType"><i class="fa-solid fa-file-lines"></i> Uri ng Serbisyo</label>
-                <select id="serviceType" required>
-                    <option value="" disabled selected>Piliin ang serbisyo...</option>
-                    <option value="Certification of Grades">Certification of Grades</option>
-                    <option value="Transcript of Records (TOR)">Transcript of Records (TOR)</option>
-                    <option value="Diploma">Diploma</option>
-                    <option value="Honorable Dismissal">Honorable Dismissal</option>
-                </select>
-            </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">Get e-Ticket</button>
+            </form>
 
-            <!-- Date Selection -->
-            <div class="input-group">
-                <label for="appointmentDate"><i class="fa-solid fa-calendar"></i> Pumili ng Petsa ng Pagkuha</label>
-                <input type="date" id="appointmentDate" required>
-            </div>
-
-            <!-- Time Slots Section -->
-            <div class="input-group">
-                <label><i class="fa-solid fa-clock"></i> Pumili ng Oras</label>
-                <div id="timeSlotsContainer" class="time-slots-container">
-                    Walang available na oras o hindi pa naitakda ng Registrar ang mga oras para sa petsang ito.
+            <div id="ticketContainer">
+                <h4>🎉 Matagumpay ang Pag-book!</h4>
+                <p id="ticketInfo" class="fw-bold mt-2"></p>
+                <div id="qrcode" class="d-flex justify-content-center my-3"></div>
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm mt-2" onclick="location.reload()">Mag-book ulit</button>
                 </div>
             </div>
 
-            <button type="submit" class="submit-btn">
-                <i class="fa-solid fa-ticket"></i> Get e-Ticket
-            </button>
-        </form>
-
-        <div class="logout-container">
-            <a href="index.html" class="logout-link"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out</a>
+            <div class="text-center mt-3">
+                <a href="index.html" class="text-decoration-none">← Log Out</a>
+            </div>
         </div>
     </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    const defaultTimeSlots = [
+        "9:00 AM - 10:00 AM",
+        "10:00 AM - 11:00 AM",
+        "11:00 AM - 12:00 NN",
+        "1:00 PM - 2:00 PM",
+        "2:00 PM - 3:00 PM",
+        "3:00 PM - 4:00 PM",
+        "4:00 PM - 5:00 PM",
+        "5:00 PM - 6:00 PM"
+    ];
+
+    const loggedUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (loggedUser.name) {
+        document.getElementById('nameInput').value = loggedUser.name;
+        document.getElementById('emailInput').value = loggedUser.email || '';
+    }
+
+    let selectedDateStr = "";
+
+    function initCalendar() {
+        flatpickr("#datePicker", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            onChange: function(selectedDates, dateStr) {
+                selectedDateStr = dateStr;
+                document.getElementById('selectedDateInput').value = dateStr;
+                document.getElementById('timeSlotGroup').style.display = 'block';
+                loadAvailableSlots(dateStr);
+            }
+        });
+    }
+
+    async function loadAvailableSlots(date) {
+        const container = document.getElementById('timeSlotsContainer');
+        container.innerHTML = "<p class='text-muted text-center'>Naglo-load ng mga slot...</p>";
+
+        let slotStatusData = {};
+        try {
+            const res = await fetch(`/api/slot-status/${date}`);
+            slotStatusData = await res.json();
+        } catch (err) {
+            console.error("Error fetching slots:", err);
+            container.innerHTML = "<p class='text-danger text-center'>Error sa pag-load ng slots. Subukan ulit.</p>";
+            return;
+        }
+
+        container.innerHTML = "";
+        let hasAvailable = false;
+
+        defaultTimeSlots.forEach(timeSlot => {
+            let slotInfo = slotStatusData[timeSlot];
+            
+            let isFull = true;
+            let bookedCount = 0;
+            let limitCount = 0;
+
+            if (slotInfo !== undefined) {
+                limitCount = typeof slotInfo === 'object' ? slotInfo.limit : slotInfo;
+                bookedCount = typeof slotInfo === 'object' ? (slotInfo.booked || 0) : 0;
+                
+                if (limitCount > 0 && bookedCount < limitCount) {
+                    isFull = false;
+                }
+            }
+
+            if (!isFull) hasAvailable = true;
+
+            const label = document.createElement('label');
+            label.className = `btn btn-slot ${isFull ? 'full' : 'available'}`;
+            
+            label.innerHTML = `
+                <span>${timeSlot}</span>
+                <span class="badge ${isFull ? 'bg-danger' : 'bg-success'}">
+                    ${isFull ? 'Unavailable (Full)' : `Available (${bookedCount}/${limitCount})`}
+                </span>
+            `;
+
+            if (!isFull) {
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'timeSlot';
+                radio.value = timeSlot;
+                radio.required = true;
+                
+                radio.addEventListener('change', () => {
+                    document.querySelectorAll('.btn-slot').forEach(b => b.classList.remove('selected'));
+                    label.classList.add('selected');
+                });
+
+                label.prepend(radio);
+            } else {
+                label.style.pointerEvents = 'none';
+            }
+
+            container.appendChild(label);
+        });
+
+        if (!hasAvailable) {
+            container.innerHTML = "<p class='text-muted text-center py-3'>Walang available na oras o hindi pa naitakda ng Registrar ang mga oras para sa petsang ito.</p>";
+        }
+    }
+
+    initCalendar();
+
+    const form = document.getElementById('appointmentForm');
+    const ticketContainer = document.getElementById('ticketContainer');
+    const ticketInfo = document.getElementById('ticketInfo');
+    const qrcodeDiv = document.getElementById('qrcode');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const studentName = document.getElementById('nameInput').value;
+        const email = document.getElementById('emailInput',).value;
+        const service = document.getElementById('serviceSelect').value;
+        const targetDate = document.getElementById('selectedDateInput').value;
+        const targetTime = document.querySelector('input[name="timeSlot"]:checked')?.value;
+
+        if (!targetDate || !targetTime) {
+            alert("Pumili muna ng petsa at oras.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: studentName, email, service, targetDate, targetTime })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                ticketInfo.innerText = `${data.name || studentName} | ${service} (${data.window || 'Window 3'})\nDate: ${targetDate} | Time: ${targetTime}`;
+                ticketContainer.style.display = 'block';
+                form.style.display = 'none';
+
+                qrcodeDiv.innerHTML = "";
+                new QRCode(qrcodeDiv, {
+                    text: `TICKET-ID: ${data.id || 'N/A'}\nName: ${studentName}\nService: ${service}\nDate: ${targetDate}\nTime: ${targetTime}`,
+                    width: 130,
+                    height: 130
+                });
+            } else {
+                alert(data.error || data.message || "May error sa paggawa ng appointment.");
+                if (selectedDateStr) loadAvailableSlots(selectedDateStr);
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Hindi maka-connect sa server.");
+        }
+    });
+</script>
 
 </body>
 </html>
