@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICCT Registrar - Book Appointment</title>
+    <title>Mag-book ng Appointment | ICCT Registrar</title>
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -25,7 +25,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 30px 20px;
             position: relative;
             overflow-x: hidden;
         }
@@ -61,57 +61,65 @@
             100% { transform: translate(30px, 50px) scale(1.1); }
         }
 
-        /* Glassmorphism Container */
+        /* Glassmorphism Card Container */
         .container {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 540px;
             width: 100%;
-            max-width: 480px;
+            margin: auto;
             position: relative;
             z-index: 1;
         }
 
-        h2 {
-            color: #f8fafc;
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             text-align: center;
-            margin-bottom: 8px;
-            font-size: 1.75rem;
+            padding: 30px 20px 20px 20px;
+        }
+
+        .card-header h3 {
+            color: #f8fafc;
+            margin: 0 0 6px 0;
+            font-size: 1.5rem;
             font-weight: 800;
             letter-spacing: -0.5px;
         }
 
-        .subtitle {
-            text-align: center;
+        .card-header p {
             color: #94a3b8;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        label {
             font-size: 0.85rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .form-label {
+            display: block;
             font-weight: 600;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
             color: #cbd5e1;
         }
 
-        input[type="text"], input[type="email"], select {
+        .form-control, .form-select {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 15px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: rgba(15, 23, 42, 0.6);
             color: #f8fafc;
@@ -119,34 +127,106 @@
             transition: all 0.3s ease;
         }
 
-        input[type="text"]::placeholder, input[type="email"]::placeholder {
+        .form-control::placeholder {
             color: #64748b;
         }
 
-        input[type="text"]:focus, input[type="email"]:focus, select:focus {
+        .form-control:focus, .form-select:focus {
             border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
             background-color: rgba(15, 23, 42, 0.9);
         }
 
-        select option {
+        .form-select option {
             background-color: #0f172a;
             color: #f8fafc;
         }
 
+        .mb-3 {
+            margin-bottom: 18px !important;
+        }
+
+        /* Slot Buttons Styling */
+        .btn-slot {
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+            padding: 12px 16px;
+        }
+
+        .btn-slot input[type="radio"] {
+            display: none;
+        }
+
+        .btn-slot.available {
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            background-color: rgba(15, 23, 42, 0.5);
+            cursor: pointer;
+        }
+
+        .btn-slot.available:hover {
+            background-color: rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+        }
+
+        .btn-slot.selected {
+            background-color: #10b981 !important;
+            color: white !important;
+            border-color: #10b981 !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-slot.selected .badge {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+        }
+
+        .btn-slot.full {
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            background-color: rgba(239, 68, 68, 0.1);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .bg-success {
+            background-color: rgba(16, 185, 129, 0.2) !important;
+            color: #34d399 !important;
+        }
+
+        .bg-danger {
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            color: #fca5a5 !important;
+        }
+
+        /* Primary Submit Button */
         .btn-primary {
             width: 100%;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            color: white;
-            border: none;
             padding: 14px;
             border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            font-size: 0.95rem;
             font-weight: 700;
-            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-            margin-top: 10px;
         }
 
         .btn-primary:hover {
@@ -154,181 +234,295 @@
             box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.6);
         }
 
-        .logout-link {
-            display: block;
+        /* Ticket Container Styles */
+        #ticketContainer {
+            display: none;
             text-align: center;
             margin-top: 20px;
-            color: #94a3b8;
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 16px;
+            border: 1px dashed rgba(99, 102, 241, 0.4);
+        }
+
+        #ticketContainer h4 {
+            color: #34d399;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        #ticketInfo {
+            color: #f8fafc;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .btn-outline-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-size: 0.85rem;
-            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        /* Log out link */
+        .text-center.mt-3 a {
+            color: #fca5a5;
+            font-size: 0.85rem;
             font-weight: 600;
             transition: color 0.2s;
         }
 
-        .logout-link:hover {
-            color: #f8fafc;
-            text-decoration: underline;
+        .text-center.mt-3 a:hover {
+            color: #ef4444;
+            text-decoration: underline !important;
+        }
+
+        /* Text muted adjustments */
+        .text-muted {
+            color: #94a3b8 !important;
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Glow Blobs -->
-    <div class="bg-blob-1"></div>
-    <div class="bg-blob-2"></div>
+<!-- Background Glow Blobs -->
+<div class="bg-blob-1"></div>
+<div class="bg-blob-2"></div>
 
-    <div class="container">
-        <h2>Book Appointment</h2>
-        <p class="subtitle">Choose your service, preferred date, and time slot</p>
-        
-        <form id="appointmentForm" onsubmit="submitAppointment(event)">
-            <div class="form-group">
-                <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" placeholder="Enter your full name" required>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h3>Mag-book ng Appointment</h3>
+            <p class="mb-0">Piliin ang iyong serbisyo, petsa, at oras</p>
+        </div>
+        <div class="card-body p-4">
+            <form id="appointmentForm">
+                <div class="mb-3">
+                    <label for="nameInput" class="form-label">Buong Pangalan</label>
+                    <input type="text" class="form-control" id="nameInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="emailInput" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="emailInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="serviceSelect" class="form-label">Uri ng Serbisyo</label>
+                    <select class="form-select" id="serviceSelect" required>
+                        <option value="" selected disabled>Pumili ng Serbisyo...</option>
+                        <option value="Transcript of Records (TOR)">Transcript of Records (TOR)</option>
+                        <option value="Diploma">Diploma</option>
+                        <option value="Certificate of Enrollment">Certificate of Enrollment</option>
+                        <option value="Certification of Grades">Certification of Grades</option>
+                        <option value="Summary of Grades">Summary of Grades</option>
+                        <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
+                        <option value="Honorable Dismissal">Honorable Dismissal</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">📅 Pumili ng Petsa ng Pagkuha:</label>
+                    <input type="text" id="datePicker" class="form-control" placeholder="I-click para pumili ng petsa..." required>
+                    <input type="hidden" id="selectedDateInput">
+                </div>
+
+                <div class="mb-3" id="timeSlotGroup" style="display: none;">
+                    <label class="form-label">⏰ Pumili ng Oras:</label>
+                    <div id="timeSlotsContainer"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2">Get e-Ticket</button>
+            </form>
+
+            <div id="ticketContainer">
+                <h4>🎉 Matagumpay ang Pag-book!</h4>
+                <p id="ticketInfo" class="fw-bold mt-2"></p>
+                <div id="qrcode" class="d-flex justify-content-center my-3"></div>
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm mt-2" onclick="location.reload()">Mag-book ulit</button>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" placeholder="Enter your email address" required>
+            <div class="text-center mt-3">
+                <a href="index.html" class="text-decoration-none">← Log Out</a>
             </div>
-
-            <div class="form-group">
-                <label for="service">Type of Service</label>
-                <select id="service" required>
-                    <option value="" disabled selected>Select a service...</option>
-                    <option value="Transcript of Records (TOR)">Transcript of Records (TOR)</option>
-                    <option value="Diploma">Diploma</option>
-                    <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
-                    <option value="Honorable Dismissal">Honorable Dismissal</option>
-                    <option value="Authentication of Documents">Authentication of Documents</option>
-                    <option value="Certificate of Enrollment">Certificate of Enrollment</option>
-                    <option value="Certification of Grades">Certification of Grades</option>
-                    <option value="Summary of Grades">Summary of Grades</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="targetDate">Target Pickup Date:</label>
-                <input type="text" id="targetDate" placeholder="Click to select date..." required>
-            </div>
-
-            <div class="form-group">
-                <label for="targetTime">Preferred Time Slot:</label>
-                <select id="targetTime" required>
-                    <option value="" disabled selected>Select available time slot...</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn-primary">Get e-Ticket</button>
-        </form>
-
-        <a href="index.html" class="logout-link">← Log Out</a>
+        </div>
     </div>
+</div>
 
-    <!-- Flatpickr JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-        let enabledDates = [];
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    const defaultTimeSlots = [
+        "9:00 AM - 10:00 AM",
+        "10:00 AM - 11:00 AM",
+        "11:00 AM - 12:00 NN",
+        "1:00 PM - 2:00 PM",
+        "2:00 PM - 3:00 PM",
+        "3:00 PM - 4:00 PM",
+        "4:00 PM - 5:00 PM",
+        "5:00 PM - 6:00 PM"
+    ];
 
-        // Auto-fill user info kung galing sa login
-        window.addEventListener('DOMContentLoaded', () => {
-            const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
-            if (loggedUser.name) {
-                document.getElementById('fullName').value = loggedUser.name;
+    const loggedUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (loggedUser.name) {
+        document.getElementById('nameInput').value = loggedUser.name;
+        document.getElementById('emailInput').value = loggedUser.email || '';
+    }
+
+    let selectedDateStr = "";
+
+    function initCalendar() {
+        flatpickr("#datePicker", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            onChange: function(selectedDates, dateStr) {
+                selectedDateStr = dateStr;
+                document.getElementById('selectedDateInput').value = dateStr;
+                document.getElementById('timeSlotGroup').style.display = 'block';
+                loadAvailableSlots(dateStr);
             }
-            if (loggedUser.email) {
-                document.getElementById('email').value = loggedUser.email;
+        });
+    }
+
+    async function loadAvailableSlots(date) {
+        const container = document.getElementById('timeSlotsContainer');
+        container.innerHTML = "<p class='text-muted text-center'>Naglo-load ng mga slot...</p>";
+
+        let slotStatusData = {};
+        try {
+            const res = await fetch(`/api/slot-status/${date}`);
+            slotStatusData = await res.json();
+        } catch (err) {
+            console.error("Error fetching slots:", err);
+            container.innerHTML = "<p class='text-danger text-center'>Error sa pag-load ng slots. Subukan ulit.</p>";
+            return;
+        }
+
+        container.innerHTML = "";
+        let hasAvailable = false;
+
+        defaultTimeSlots.forEach(timeSlot => {
+            let slotInfo = slotStatusData[timeSlot];
+            
+            let isFull = true;
+            let bookedCount = 0;
+            let limitCount = 0;
+
+            if (slotInfo !== undefined) {
+                limitCount = typeof slotInfo === 'object' ? slotInfo.limit : slotInfo;
+                bookedCount = typeof slotInfo === 'object' ? (slotInfo.booked || 0) : 0;
+                
+                if (limitCount > 0 && bookedCount < limitCount) {
+                    isFull = false;
+                }
             }
-            fetchAvailableSlots();
+
+            if (!isFull) hasAvailable = true;
+
+            const label = document.createElement('label');
+            label.className = `btn btn-slot ${isFull ? 'full' : 'available'}`;
+            
+            label.innerHTML = `
+                <span>${timeSlot}</span>
+                <span class="badge ${isFull ? 'bg-danger' : 'bg-success'}">
+                    ${isFull ? 'Unavailable (Full)' : `Available (${bookedCount}/${limitCount})`}
+                </span>
+            `;
+
+            if (!isFull) {
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'timeSlot';
+                radio.value = timeSlot;
+                radio.required = true;
+                
+                radio.addEventListener('change', () => {
+                    document.querySelectorAll('.btn-slot').forEach(b => b.classList.remove('selected'));
+                    label.classList.add('selected');
+                });
+
+                label.prepend(radio);
+            } else {
+                label.style.pointerEvents = 'none';
+            }
+
+            container.appendChild(label);
         });
 
-        async function fetchAvailableSlots() {
-            try {
-                const response = await fetch('/api/slots');
-                const slots = await response.json();
-                enabledDates = slots.map(s => s.date);
+        if (!hasAvailable) {
+            container.innerHTML = "<p class='text-muted text-center py-3'>Walang available na oras o hindi pa naitakda ng Registrar ang mga oras para sa petsang ito.</p>";
+        }
+    }
 
-                flatpickr("#targetDate", {
-                    dateFormat: "Y-m-d",
-                    enable: enabledDates,
-                    minDate: "today",
-                    onChange: function(selectedDates, dateStr) {
-                        loadTimeSlotsForDate(dateStr);
-                    }
+    initCalendar();
+
+    const form = document.getElementById('appointmentForm');
+    const ticketContainer = document.getElementById('ticketContainer');
+    const ticketInfo = document.getElementById('ticketInfo');
+    const qrcodeDiv = document.getElementById('qrcode');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const studentName = document.getElementById('nameInput').value;
+        const email = document.getElementById('emailInput',).value;
+        const service = document.getElementById('serviceSelect').value;
+        const targetDate = document.getElementById('selectedDateInput').value;
+        const targetTime = document.querySelector('input[name="timeSlot"]:checked')?.value;
+
+        if (!targetDate || !targetTime) {
+            alert("Pumili muna ng petsa at oras.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: studentName, email, service, targetDate, targetTime })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                ticketInfo.innerText = `${data.name || studentName} | ${service} (${data.window || 'Window 3'})\nDate: ${targetDate} | Time: ${targetTime}`;
+                ticketContainer.style.display = 'block';
+                form.style.display = 'none';
+
+                qrcodeDiv.innerHTML = "";
+                new QRCode(qrcodeDiv, {
+                    text: `TICKET-ID: ${data.id || 'N/A'}\nName: ${studentName}\nService: ${service}\nDate: ${targetDate}\nTime: ${targetTime}`,
+                    width: 130,
+                    height: 130
                 });
-            } catch (err) {
-                console.error("Error fetching slots:", err);
+            } else {
+                alert(data.error || data.message || "May error sa paggawa ng appointment.");
+                if (selectedDateStr) loadAvailableSlots(selectedDateStr);
             }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Hindi maka-connect sa server.");
         }
+    });
+</script>
 
-        async function loadTimeSlotsForDate(date) {
-            const timeSelect = document.getElementById('targetTime');
-            timeSelect.innerHTML = '<option value="" disabled selected>Loading time slots...</option>';
-
-            try {
-                // Nakakonekta na ngayon sa tamang backend route na /api/slot-status/${date}
-                const response = await fetch(`/api/slot-status/${date}`);
-                const slotStatus = await response.json();
-
-                timeSelect.innerHTML = '<option value="" disabled selected>Select available time slot...</option>';
-                
-                let hasAvailable = false;
-
-                for (const [timeSlot, info] of Object.entries(slotStatus)) {
-                    const opt = document.createElement('option');
-                    opt.value = timeSlot;
-                    
-                    if (info.isFull) {
-                        opt.textContent = `${timeSlot} (Fully Booked - ${info.booked}/${info.limit})`;
-                        opt.disabled = true;
-                    } else {
-                        opt.textContent = `${timeSlot} (${info.booked}/${info.limit} booked)`;
-                        hasAvailable = true;
-                    }
-                    timeSelect.appendChild(opt);
-                }
-
-                if (!hasAvailable && Object.keys(slotStatus).length > 0) {
-                    const opt = document.createElement('option');
-                    opt.disabled = true;
-                    opt.textContent = "All time slots are fully booked for this date";
-                    timeSelect.appendChild(opt);
-                }
-            } catch (err) {
-                console.error("Error loading time slots:", err);
-                timeSelect.innerHTML = '<option value="" disabled selected>Failed to load time slots</option>';
-            }
-        }
-
-        async function submitAppointment(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            const service = document.getElementById('service').value;
-            const targetDate = document.getElementById('targetDate').value;
-            const targetTime = document.getElementById('targetTime').value;
-
-            try {
-                const response = await fetch('/api/appointments', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, service, targetDate, targetTime })
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert("Appointment successfully booked! Your e-Ticket code is: " + (result.id || result.ticketCode));
-                    window.location.href = `ticket.html?code=${result.id || result.ticketCode}`;
-                } else {
-                    alert(result.error || "Failed to book appointment.");
-                }
-            } catch (err) {
-                console.error("Error submitting appointment:", err);
-                alert("Cannot connect to the server.");
-            }
-        }
-    </script>
 </body>
 </html>
