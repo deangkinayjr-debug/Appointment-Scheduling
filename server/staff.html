@@ -300,20 +300,16 @@
         </h2>
         <p class="subtitle">Set available dates and time slot limits for students and manage active queues.</p>
         
-        <!-- SECTION PARA SA PANGKALAHATANG SLOT -->
+        <!-- SECTION PARA SA PANGKALAHATANG SLOT (PINATANGGAL ANG OVERALL MAX LIMIT) -->
         <div class="section-box">
-            <h3><i class="fa-solid fa-calendar-plus" style="color: #818cf8;"></i> Open Appointment Date / Max Slots</h3>
+            <h3><i class="fa-solid fa-calendar-plus" style="color: #818cf8;"></i> Open Appointment Date</h3>
             <form id="slotForm" onsubmit="createSlot(event)">
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group" style="flex: 2;">
                         <label for="slotDate">Select Date:</label>
                         <input type="text" id="slotDate" placeholder="Select date..." required>
                     </div>
-                    <div class="form-group">
-                        <label for="slotLimit">Overall Max Limit:</label>
-                        <input type="number" id="slotLimit" value="50" min="1" required>
-                    </div>
-                    <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Save Date</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-plus"></i> Activate Date</button>
                 </div>
             </form>
         </div>
@@ -402,20 +398,19 @@
         async function createSlot(event) {
             event.preventDefault();
             const date = document.getElementById('slotDate').value;
-            const limit = document.getElementById('slotLimit').value;
 
             try {
                 const response = await fetch('/api/slots', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ date, limit })
+                    body: JSON.stringify({ date, limit: 50 })
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    alert("Successfully added available slot for date: " + date);
+                    alert("Successfully activated date: " + date);
                     loadExistingTimeLimits(date);
                 } else {
-                    alert(result.error || "Error creating slot.");
+                    alert(result.error || "Error activating date.");
                 }
             } catch (err) {
                 console.error("Error:", err);
