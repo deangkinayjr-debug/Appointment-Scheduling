@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config({ path: './.env' });
 const { createClient } = require('@supabase/supabase-js');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,27 +21,26 @@ if (supabaseUrl && supabaseKey) {
     supabase = createClient(supabaseUrl, supabaseKey);
 }
 
-// Nodemailer Configuration para sa Gmail
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Port 587 uses STARTTLS
-    requireTLS: true,
-    pool: true, // Reuses connections to prevent port timeout
-    maxConnections: 3,
-    maxMessages: 10,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    tls: {
-        rejectUnauthorized: false
-    },
-    connectionTimeout: 10000, // 10 seconds timeout limit
-    greetingTimeout: 5000,
-    socketTimeout: 15000
-});
+// Resend Transporter Wrapper para hindi na baguhin ang sendMail calls mo
+const transporter = {
+    sendMail: async (mailOptions) => {
+        const { from, to, subject, html, attachments } = mailOptions;
+        
+        // Convert attachments para tanggapin ng Resend
+        const formattedAttachments = attachments ? attachments.map(att => ({
+            filename: att.filename,
+            content: att.content
+        })) : [];
 
+        return await resend.emails.send({
+            from: from || 'ICCT Registrar <onboarding@resend.dev>',
+            to: to,
+            subject: subject,
+            html: html,
+            attachments: formattedAttachments
+        });
+    }
+};
 let fallbackAppointments = [
     { id: 1, name: "Juan Dela Cruz", service: "Transcript of Records (TOR)", window: "Window 3", status: "Waiting", email: "sample@email.com", targetDate: "2026-09-19", targetTime: "9:00 AM - 10:00 AM" }
 ];
