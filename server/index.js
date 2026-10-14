@@ -22,18 +22,16 @@ if (supabaseUrl && supabaseKey) {
 
 // Nodemailer Configuration para sa Gmail
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false, // false para sa port 587 (STARTTLS)
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
     tls: {
         rejectUnauthorized: false
-    },
-    family: 4 // Pilitin gamitin ang IPv4 para maiwasan ang "Greeting never received" error
+    }
 });
 
 let fallbackAppointments = [
