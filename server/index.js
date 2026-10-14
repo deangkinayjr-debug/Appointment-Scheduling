@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config({ path: './.env' });
 const { createClient } = require('@supabase/supabase-js');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +20,22 @@ if (supabaseUrl && supabaseKey) {
     supabase = createClient(supabaseUrl, supabaseKey);
 }
 
+// Nodemailer Configuration para sa Gmail
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
+    },
+    family: 4 // Pilitin gamitin ang IPv4 para maiwasan ang "Greeting never received" error
+});
+
 let fallbackAppointments = [
     { id: 1, name: "Juan Dela Cruz", service: "Transcript of Records (TOR)", window: "Window 3", status: "Waiting", email: "sample@email.com", targetDate: "2026-09-19", targetTime: "9:00 AM - 10:00 AM" }
 ];
@@ -27,8 +44,8 @@ let availableSlots = [];
 let timeSlotLimits = {}; // Dito sine-save ng staff ang limit bawat oras
 
 const registeredStudents = [
-    { studentNumber: "CA202306112", name: "Jan Cristan R. Deangkinay", email: "jan@icct.edu.ph", password: "password123" },
-    { studentNumber: "CA202300000", name: "Juan Dela Cruz", email: "juan@icct.edu.ph", password: "password123" }
+    { fullName: "Jan Cristan R. Deangkinay", studentNumber: "CA202306112", email: "jan@icct.edu.ph", password: "password123" },
+    { fullName: "Juan Dela Cruz", studentNumber: "CA202300000", email: "juan@icct.edu.ph", password: "password123" }
 ];
 
 function getWindowForService(service) {
@@ -62,31 +79,115 @@ async function checkSupabaseConnection() {
 
 checkSupabaseConnection();
 
-app.post('/api/login', (req, res) => {
+// ==================== REGISTER API ====================
+app.post('/api/register', async (req, res) => {
     const { fullName, studentNumber, password } = req.body;
-    let student = registeredStudents.find(s => s.studentNumber === studentNumber);
+
+    if (!fullName || !studentNumber || !password) {
+        return res.status(400).json({ success: false, error: "All fields are required." });
+    }
+
+    if (isSupabaseConnected && supabase) {
+        try {
+            const { data: existingStudent } = await supabase
+                .from('students')
+                .select('*')
+                .eq('studentNumber', studentNumber)
+                .single();
+
+            if (existingStudent) {
+                return res.status(400).json({ success: false, error: "Student Number is already registered!" });
+            }
+
+            const { error: insertError } = await supabase
+                .from('students')
+                .insert([{ fullName, studentNumber, password }]);
+
+            if (insertError) throw insertError;
+
+            return res.json({ success: true, message: "Registration successful!" });
+        } catch (err) {
+            console.error("Supabase Register Error:", err.message);
+            return res.status(500).json({ success: false, error: "Registration failed on database." });
+        }
+    }
+
+    const existing = registeredStudents.find(s => s.studentNumber === studentNumber);
+    if (existing) {
+        return res.status(400).json({ success: false, error: "Student Number is already registered!" });
+    }
+
+    registeredStudents.push({
+        fullName,
+        studentNumber,
+        email: `${studentNumber}@icct.edu.ph`,
+        password
+    });
+
+    res.json({ success: true, message: "Registration successful!" });
+});
+
+// ==================== SECURE LOGIN API ====================
+app.post('/api/login', async (req, res) => {
+    const { studentNumber, password } = req.body;
+
+    if (!studentNumber || !password) {
+        return res.status(400).json({ success: false, error: "Please enter Student Number and Password." });
+    }
+
+    if (isSupabaseConnected && supabase) {
+        try {
+            const { data: student, error } = await supabase
+                .from('students')
+                .select('*')
+                .eq('studentNumber', studentNumber)
+                .single();
+
+            if (error || !student) {
+                return res.status(404).json({ success: false, error: "Account not yet registered. Please register first." });
+            }
+
+            if (student.password !== password) {
+                return res.status(401).json({ success: false, error: "Incorrect password. Please try again." });
+            }
+
+            return res.json({
+                success: true,
+                message: "Login successful!",
+                user: {
+                    name: student.fullName,
+                    studentNumber: student.studentNumber,
+                    email: student.email || `${student.studentNumber}@icct.edu.ph`
+                }
+            });
+        } catch (err) {
+            console.error("Supabase Login Error:", err.message);
+            return res.status(500).json({ success: false, error: "Internal server error." });
+        }
+    }
+
+    const student = registeredStudents.find(s => s.studentNumber === studentNumber);
 
     if (!student) {
-        student = {
-            studentNumber: studentNumber || "CA202300999",
-            name: fullName || "Valued Student",
-            email: `${studentNumber || 'student'}@icct.edu.ph`,
-            password: password || "password123"
-        };
-        registeredStudents.push(student);
+        return res.status(404).json({ success: false, error: "Account not yet registered. Please register first." });
+    }
+
+    if (student.password !== password) {
+        return res.status(401).json({ success: false, error: "Incorrect password. Please try again." });
     }
 
     res.json({
         success: true,
         message: "Login successful!",
         user: {
-            name: fullName || student.name,
+            name: student.fullName,
             studentNumber: student.studentNumber,
             email: student.email
         }
     });
 });
 
+// ==================== APPOINTMENTS APIs ====================
 app.get('/api/appointments', async (req, res) => {
     if (isSupabaseConnected && supabase) {
         try {
@@ -101,6 +202,9 @@ app.get('/api/appointments', async (req, res) => {
 });
 
 app.post('/api/appointments', async (req, res) => {
+    console.log("QR sent successfully:", req.body.email);
+    console.log("Email User sa .env:", process.env.EMAIL_USER);
+
     const { name, email, service, targetDate, targetTime } = req.body;
     const assignedWindow = getWindowForService(service);
 
@@ -155,7 +259,7 @@ app.post('/api/appointments', async (req, res) => {
             }
 
             if (currentBookingsCount >= maxLimit) {
-                return res.status(400).json({ error: "Paumanhin, ang oras na ito ay Full na at hindi na maaaring ma-book." });
+                return res.status(400).json({ error: "This time slot is already fully booked and can no longer accept appointments." });
             }
         }
     }
@@ -171,18 +275,66 @@ app.post('/api/appointments', async (req, res) => {
         status: "Waiting"
     };
 
+    let savedAppointment = newAppointment;
+
     if (isSupabaseConnected && supabase) {
         try {
             const { data, error } = await supabase.from('appointments').insert([newAppointment]).select();
             if (error) throw error;
-            return res.status(201).json(data[0]);
+            savedAppointment = data[0];
         } catch (err) {
             console.error("POST Error sa Supabase:", err.message);
         }
+    } else {
+        fallbackAppointments.push(newAppointment);
     }
 
-    fallbackAppointments.push(newAppointment);
-    res.status(201).json(newAppointment);
+    // MAGPADALA NG EMAIL SA GMAIL (KASAMA ANG QR CODE)
+    if (email && email !== "N/A" && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const qrData = encodeURIComponent(`TICKET-ID:${savedAppointment.id}|Name:${name}|Service:${service}|Date:${targetDate}|Time:${targetTime}`);
+        const qrCodeUrl = `https://quickchart.io/qr?text=${qrData}&size=200`;
+
+        const mailOptions = {
+            from: `"ICCT Registrar" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: '🎓 ICCT Registrar - Appointment e-Ticket & QR Code',
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 25px; background-color: #0f172a; color: #ffffff; border-radius: 16px; max-width: 450px; margin: auto; text-align: center;">
+                    <h2 style="color: #a855f7; margin-bottom: 5px;">ICCT Registrar e-Ticket</h2>
+                    <p style="color: #94a3b8; font-size: 13px;">Official Queueing Confirmation</p>
+                    
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin: 20px 0; text-align: left;">
+                        <p style="margin: 5px 0;"><strong>Name:</strong> ${name}</p>
+                        <p style="margin: 5px 0;"><strong>Service:</strong> ${service}</p>
+                        <p style="margin: 5px 0;"><strong>Date:</strong> ${targetDate}</p>
+                        <p style="margin: 5px 0;"><strong>Time Slot:</strong> ${targetTime}</p>
+                        <p style="margin: 5px 0;"><strong>Window:</strong> ${assignedWindow}</p>
+                        <p style="margin: 5px 0;"><strong>Ticket ID:</strong> #${savedAppointment.id}</p>
+                    </div>
+
+                    <p style="color: #cbd5e1; font-size: 14px;">Your Official Entry QR Code:</p>
+                    
+                    <div style="background: white; padding: 15px; display: inline-block; border-radius: 12px; margin: 10px 0;">
+                        <img src="${qrCodeUrl}" alt="e-Ticket QR Code" style="width: 180px; height: 180px; display: block;" />
+                    </div>
+
+                    <p style="font-size: 12px; color: #94a3b8; margin-top: 15px;">
+                        Pakipakita ang QR code na ito sa nakatalagang Window sa iyong appointment date.
+                    </p>
+                </div>
+            `
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error.message);
+            } else {
+                console.log("e-Ticket Email with QR sent successfully:", info.response);
+            }
+        });
+    }
+
+    res.status(201).json(savedAppointment);
 });
 
 app.delete('/api/appointments/:id', async (req, res) => {
@@ -192,14 +344,14 @@ app.delete('/api/appointments/:id', async (req, res) => {
         try {
             const { error } = await supabase.from('appointments').delete().eq('id', id);
             if (error) throw error;
-            return res.json({ message: "Matagumpay na na-delete sa Supabase!" });
+            return res.json({ message: "Appointment successfully deleted." });
         } catch (err) {
             console.error("DELETE Error sa Supabase:", err.message);
         }
     }
 
     fallbackAppointments = fallbackAppointments.filter(item => item.id !== id);
-    res.json({ message: "Matagumpay na na-delete ang appointment!" });
+    res.json({ message: "Appointment successfully deleted." });
 });
 
 app.put('/api/appointments/:id', async (req, res) => {
@@ -210,7 +362,7 @@ app.put('/api/appointments/:id', async (req, res) => {
         try {
             const { data, error } = await supabase.from('appointments').update({ status }).eq('id', id).select();
             if (error) throw error;
-            return res.json({ message: "Matagumpay na na-update ang status!", data: data[0] });
+            return res.json({ message: "Appointment status updated successfully.", data: data[0] });
         } catch (err) {
             console.error("UPDATE Error sa Supabase:", err.message);
         }
@@ -219,10 +371,10 @@ app.put('/api/appointments/:id', async (req, res) => {
     const item = fallbackAppointments.find(i => i.id === id);
     if (item) {
         item.status = status;
-        return res.json({ message: "Matagumpay na na-update ang status!", data: item });
+        return res.json({ message: "Appointment status updated successfully.", data: item });
     }
 
-    res.status(404).json({ error: "Hindi nahanap ang appointment" });
+    res.status(404).json({ error: "Appointment not found." });
 });
 
 app.get('/api/slots', (req, res) => {
@@ -232,7 +384,7 @@ app.get('/api/slots', (req, res) => {
 app.post('/api/slots', (req, res) => {
     const { date, limit } = req.body;
     if (!date) {
-        return res.status(400).json({ error: "Kailangan ilagay ang petsa." });
+        return res.status(400).json({ error: "Date is required." });
     }
     
     const existing = availableSlots.find(s => s.date === date);
@@ -247,7 +399,7 @@ app.post('/api/slots', (req, res) => {
 app.post('/api/staff/set-time-limits', (req, res) => {
     const { date, limits } = req.body;
     if (!date || !limits) {
-        return res.status(400).json({ error: "Kailangan ang petsa at mga limit." });
+        return res.status(400).json({ error: "Date and slot limits are required." });
     }
     
     let cleanDate = date.trim();
@@ -265,7 +417,7 @@ app.post('/api/staff/set-time-limits', (req, res) => {
         availableSlots.push({ id: Date.now().toString(), date: cleanDate, limit: 50 });
     }
 
-    res.json({ message: "Tagumpay na nailagay ang slot limits para sa oras na ito!" });
+    res.json({ message: "Time slot limits have been saved successfully." });
 });
 
 app.get('/api/time-limits/:date', (req, res) => {
@@ -294,6 +446,14 @@ app.get('/api/slot-limits', (req, res) => {
     res.json(normalizedLimits);
 });
 
+// Student Calendar Available Dates
+app.get('/api/available-dates', (req, res) => {
+    const availableDates = availableSlots
+        .filter(slot => Number(slot.limit) > 0)
+        .map(slot => slot.date);
+    res.json([...new Set(availableDates)]);
+});
+
 app.get('/api/slot-status/:date', async (req, res) => {
     let targetDate = req.params.date.trim();
     
@@ -306,6 +466,9 @@ app.get('/api/slot-status/:date', async (req, res) => {
     }
 
     let limits = timeSlotLimits[normalizedDate] || {};
+    const generalSlot = availableSlots.find(s => s.date === normalizedDate);
+    
+    const isDateConfigured = Object.keys(limits).length > 0 || generalSlot !== undefined;
     
     const defaultTimeSlots = [
         "9:00 AM - 10:00 AM",
@@ -337,12 +500,25 @@ app.get('/api/slot-status/:date', async (req, res) => {
 
     let slotStatus = {};
     defaultTimeSlots.forEach(timeSlot => {
-        let maxLimit = limits[timeSlot] !== undefined ? limits[timeSlot] : 0; 
+        let maxLimit = 0;
+        
+        if (isDateConfigured) {
+            if (limits[timeSlot] !== undefined) {
+                maxLimit = Number(limits[timeSlot]);
+            } else if (generalSlot) {
+                maxLimit = Number(generalSlot.limit);
+            } else {
+                maxLimit = 50;
+            }
+        } else {
+            maxLimit = 0;
+        }
+
         let currentCount = appointments.filter(a => a.targetTime === timeSlot).length;
         slotStatus[timeSlot] = {
             limit: maxLimit,
             booked: currentCount,
-            isFull: currentCount >= maxLimit
+            isFull: maxLimit === 0 || currentCount >= maxLimit
         };
     });
 

@@ -389,8 +389,16 @@
 
     let selectedDateStr = "";
 
-    function initCalendar() {
-        flatpickr("#datePicker", {
+    async function initCalendar() {
+        let enabledDates = [];
+        try {
+            const res = await fetch('/api/available-dates');
+            enabledDates = await res.json();
+        } catch (err) {
+            console.error("Error loading available dates:", err);
+        }
+
+        const calendarConfig = {
             dateFormat: "Y-m-d",
             minDate: "today",
             onChange: function(selectedDates, dateStr) {
@@ -399,11 +407,19 @@
                 document.getElementById('timeSlotGroup').style.display = 'block';
                 loadAvailableSlots(dateStr);
             }
-        });
+        };
+
+        if (enabledDates && enabledDates.length > 0) {
+            calendarConfig.enable = enabledDates;
+        }
+
+        flatpickr("#datePicker", calendarConfig);
     }
 
     async function loadAvailableSlots(date) {
         const container = document.getElementById('timeSlotsContainer');
+        if (!container) return;
+        
         container.innerHTML = "<p class='text-muted text-center'>Loading time slots...</p>";
 
         let slotStatusData = {};
@@ -421,10 +437,9 @@
 
         defaultTimeSlots.forEach(timeSlot => {
             let slotInfo = slotStatusData[timeSlot];
-            
             let isFull = true;
             let bookedCount = 0;
-            let limitCount = 0;
+            let limitCount = 50;
 
             if (slotInfo !== undefined) {
                 limitCount = typeof slotInfo === 'object' ? slotInfo.limit : slotInfo;
@@ -433,6 +448,8 @@
                 if (limitCount > 0 && bookedCount < limitCount) {
                     isFull = false;
                 }
+            } else {
+                isFull = false;
             }
 
             if (!isFull) hasAvailable = true;
@@ -468,16 +485,16 @@
         });
 
         if (!hasAvailable) {
-            container.innerHTML = "<p class='text-muted text-center py-3'>No available time slots or the Registrar has not set slots for this date yet.</p>";
+            container.innerHTML = "<p class='text-muted text-center py-3'>No available time slots or fully booked for this date.</p>";
         }
     }
 
-    initCalendar();
+    document.addEventListener('DOMContentLoaded', () => {
+        initCalendar();
+    });
 
     const form = document.getElementById('appointmentForm');
     const ticketContainer = document.getElementById('ticketContainer');
-    const ticketInfo = document.getElementById('ticketInfo');
-    const qrcodeDiv = document.getElementById('qrcode');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -503,16 +520,27 @@
             const data = await response.json();
 
             if (response.ok) {
-                ticketInfo.innerText = `${data.name || studentName} | ${service} (${data.window || 'Window 3'})\nDate: ${targetDate} | Time: ${targetTime}`;
-                ticketContainer.style.display = 'block';
                 form.style.display = 'none';
-
-                qrcodeDiv.innerHTML = "";
-                new QRCode(qrcodeDiv, {
-                    text: `TICKET-ID: ${data.id || 'N/A'}\nName: ${studentName}\nService: ${service}\nDate: ${targetDate}\nTime: ${targetTime}`,
-                    width: 130,
-                    height: 130
-                });
+                ticketContainer.style.display = 'block';
+                ticketContainer.innerHTML = `
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🎉</div>
+                        <h3 style="color: #4ade80; font-size: 1.2rem; margin-bottom: 12px; font-weight: 700;">
+                            Appointment Successfully Booked!
+                        </h3>
+                        <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 15px;">
+                            An e-Ticket together with your <strong>Official QR Code</strong> has been sent to your email:
+                            <br/>
+                            <strong style="color: #38bdf8; word-break: break-all;">${email}</strong>
+                        </p>
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px dashed rgba(255, 255, 255, 0.1); font-size: 0.8rem; color: #94a3b8; text-align: left; margin-bottom: 20px;">
+                            📌 <strong>Reminder:</strong> Please check your Inbox or Spam folder. Present the QR code received in your email at <strong>${data.window || 'the designated window'}</strong> on <strong>${targetDate}</strong> (${targetTime}).
+                        </div>
+                        <button onclick="window.location.reload()" class="btn btn-primary" style="margin: 0 auto; width: 100%; max-width: 220px; font-size: 0.85rem;">
+                            Book Another Appointment
+                        </button>
+                    </div>
+                `;
             } else {
                 alert(data.error || data.message || "Failed to create appointment.");
                 if (selectedDateStr) loadAvailableSlots(selectedDateStr);

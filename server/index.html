@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICCT Registrar - Student Login</title>
+    <title>ICCT Registrar - Student Portal</title>
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -183,16 +183,42 @@
             transform: scale(0.98);
         }
 
-        #errorMsg {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
+        #errorMsg, #successMsg {
             padding: 10px 14px;
             border-radius: 10px;
             font-size: 0.82rem;
             margin-bottom: 18px;
             display: none;
             text-align: center;
+        }
+
+        #errorMsg {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        #successMsg {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+
+        .toggle-text {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .toggle-text a {
+            color: #a855f7;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .toggle-text a:hover {
+            text-decoration: underline;
         }
 
         .demo-credentials {
@@ -235,41 +261,85 @@
         </div>
 
         <div id="errorMsg"></div>
+        <div id="successMsg"></div>
         
+        <!-- LOGIN FORM -->
         <form id="loginForm">
-            <!-- Full Name Field -->
-            <div class="input-group">
-                <label for="fullName">Buong Pangalan</label>
-                <div class="input-field-wrapper">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" id="fullName" placeholder="e.g., Jan Cristan Deangkinay" required>
-                </div>
-            </div>
-
             <!-- Student Number Field -->
             <div class="input-group">
-                <label for="studentNumber">Student Number</label>
+                <label for="loginStudentNumber">Student Number</label>
                 <div class="input-field-wrapper">
-                    <i class="fa-solid id-card fa-id-card"></i>
-                    <input type="text" id="studentNumber" placeholder="e.g., CA202306112" required>
+                    <i class="fa-solid fa-id-card"></i>
+                    <input type="text" id="loginStudentNumber" placeholder="e.g., CA202306112" required>
                 </div>
             </div>
 
             <!-- Password Field -->
             <div class="input-group">
-                <label for="password">Password</label>
+                <label for="loginPassword">Password</label>
                 <div class="input-field-wrapper">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="password" placeholder="••••••••" required>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
                 </div>
             </div>
 
             <button type="submit" class="submit-btn">
                 <i class="fa-solid fa-right-to-bracket"></i> Secure Login
             </button>
+
+            <p class="toggle-text">
+                Don't have an account? <a href="#" id="showRegister">Register here</a>
+            </p>
         </form>
 
-        <div class="demo-credentials">
+        <!-- REGISTRATION FORM -->
+        <form id="registerForm" style="display: none;">
+            <!-- Full Name Field -->
+            <div class="input-group">
+                <label for="regFullName">Full Name</label>
+                <div class="input-field-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="regFullName" placeholder="e.g., Jan Cristan Deangkinay" required>
+                </div>
+            </div>
+
+            <!-- Student Number Field -->
+            <div class="input-group">
+                <label for="regStudentNumber">Student Number</label>
+                <div class="input-field-wrapper">
+                    <i class="fa-solid fa-id-card"></i>
+                    <input type="text" id="regStudentNumber" placeholder="e.g., CA202306112" required>
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="input-group">
+                <label for="regPassword">Password</label>
+                <div class="input-field-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="regPassword" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <!-- Confirm Password Field -->
+            <div class="input-group">
+                <label for="regConfirmPassword">Confirm Password</label>
+                <div class="input-field-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="regConfirmPassword" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Register Account
+            </button>
+
+            <p class="toggle-text">
+                Already have an account? <a href="#" id="showLogin">Login here</a>
+            </p>
+        </form>
+
+        <div class="demo-credentials" id="demoBox">
             <strong>DEMO ACCOUNT</strong><br>
             Name: <span>Jan Cristan Deangkinay</span><br>
             No: <code>CA202306112</code> | Pass: <code>password123</code>
@@ -278,18 +348,85 @@
 
     <script>
         const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const showRegisterBtn = document.getElementById('showRegister');
+        const showLoginBtn = document.getElementById('showLogin');
         const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+        const demoBox = document.getElementById('demoBox');
 
+        // Toggle to Registration Form
+        showRegisterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            demoBox.style.display = 'none';
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+        });
+
+        // Toggle back to Login Form
+        showLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+            demoBox.style.display = 'block';
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+        });
+
+        // Login Handler
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
 
-            const fullName = document.getElementById('fullName').value.trim();
-            const studentNumber = document.getElementById('studentNumber').value.trim();
-            const password = document.getElementById('password').value;
+            const studentNumber = document.getElementById('loginStudentNumber').value.trim();
+            const password = document.getElementById('loginPassword').value;
 
             try {
                 const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ studentNumber, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    localStorage.setItem('studentName', data.user.name);
+                    localStorage.setItem('studentNumber', data.user.studentNumber);
+                    window.location.href = 'request.html';
+                } else {
+                    errorMsg.innerText = data.error || "Invalid credentials provided.";
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Login Error:", err);
+                errorMsg.innerText = "Unable to connect to the server.";
+                errorMsg.style.display = 'block';
+            }
+        });
+
+        // Registration Handler
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+
+            const fullName = document.getElementById('regFullName').value.trim();
+            const studentNumber = document.getElementById('regStudentNumber').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                errorMsg.innerText = "Passwords do not match!";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ fullName, studentNumber, password })
@@ -298,17 +435,21 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Masisave ang pangalan at student number sa localStorage para magamit sa queue request
-                    localStorage.setItem('studentName', fullName || data.user.name);
-                    localStorage.setItem('studentNumber', data.user.studentNumber);
-                    
-                    window.location.href = 'request.html';
+                    successMsg.innerText = "Registration successful! You can now login.";
+                    successMsg.style.display = 'block';
+                    registerForm.reset();
+                    setTimeout(() => {
+                        registerForm.style.display = 'none';
+                        loginForm.style.display = 'block';
+                        demoBox.style.display = 'block';
+                        successMsg.style.display = 'none';
+                    }, 2000);
                 } else {
-                    errorMsg.innerText = data.error || "Invalid credentials provided.";
+                    errorMsg.innerText = data.error || "Registration failed.";
                     errorMsg.style.display = 'block';
                 }
             } catch (err) {
-                console.error("Login Error:", err);
+                console.error("Registration Error:", err);
                 errorMsg.innerText = "Unable to connect to the server.";
                 errorMsg.style.display = 'block';
             }
