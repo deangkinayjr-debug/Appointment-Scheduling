@@ -24,14 +24,21 @@ if (supabaseUrl && supabaseKey) {
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false, // false para sa port 587 (STARTTLS)
+    secure: false, // Port 587 uses STARTTLS
+    requireTLS: true,
+    pool: true, // Reuses connections to prevent port timeout
+    maxConnections: 3,
+    maxMessages: 10,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
     tls: {
         rejectUnauthorized: false
-    }
+    },
+    connectionTimeout: 10000, // 10 seconds timeout limit
+    greetingTimeout: 5000,
+    socketTimeout: 15000
 });
 
 let fallbackAppointments = [
