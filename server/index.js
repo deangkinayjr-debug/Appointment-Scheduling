@@ -357,7 +357,7 @@ app.post('/api/appointments', async (req, res) => {
                     </div>
 
                     <p style="font-size: 12px; color: #94a3b8; margin-top: 15px;">
-                        Pakipakita ang QR code na ito sa nakatalagang Window sa iyong appointment date.
+                       Please present this QR code at your designated Window on your appointment date.
                     </p>
                 </div>
             `
