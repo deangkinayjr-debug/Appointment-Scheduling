@@ -1,32 +1,21 @@
-require('dotenv').config({ path: './.env' });
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+require('dotenv').config({ path: '../.env' });
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // false para sa port 587
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
-});
-
-async function testMail() {
-    try {
-        console.log("Sinusubukang kumonekta gamit ang:", process.env.EMAIL_USER);
-        let info = await transporter.sendMail({
-            from: `"Test Server" <${process.env.EMAIL_USER}>`,
-            to: process.env.EMAIL_USER, // Ipadala sa sarili mo
-            subject: "Test Email from Node.js",
-            text: "Kung natanggap mo ito, ibig sabihin gumagana ang Nodemailer!"
-        });
-        console.log("TAGUMPAY! Naipadala ang email:", info.response);
-    } catch (err) {
-        console.error("DETALYE NG ERROR SA NODEMAILER:", err);
-    }
+const resend = new Resend(process.env.RESEND_API_KEY);
+console.log('API Key na nababasa:', process.env.RESEND_API_KEY);
+async function testEmail() {
+  try {
+    console.log('Sinusubukang magpadala ng email gamit ang API key...');
+    const data = await resend.emails.send({
+      from: 'ICCT Registrar <onboarding@resend.dev>',
+      to: process.env.EMAIL_TO,
+      subject: 'Test Resend Email',
+      html: '<p>Gumagana na ang Resend sa app mo!</p>'
+    });
+    console.log('RESULTA NG RESEND:', data);
+  } catch (error) {
+    console.error('ERROR SA RESEND:', error);
+  }
 }
 
-testMail();
+testEmail();

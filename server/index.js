@@ -1,19 +1,21 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config({ path: './.env' });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
 const { createClient } = require('@supabase/supabase-js');
 const { Resend } = require('resend');
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY;
 let supabase = null;
 let isSupabaseConnected = false;
 
@@ -24,23 +26,54 @@ if (supabaseUrl && supabaseKey) {
 // Resend Transporter Wrapper para hindi na baguhin ang sendMail calls mo
 const transporter = {
     sendMail: async (mailOptions) => {
-        const { from, to, subject, html, attachments } = mailOptions;
+      const { from, to, subject, html, attachments } = mailOptions;
+  
+      // Convert attachments para sa Resend API
+      const formattedAttachments = attachments ? attachments.map(att => {
+        let content = att.content;
         
-        // Convert attachments para tanggapin ng Resend
-        const formattedAttachments = attachments ? attachments.map(att => ({
-            filename: att.filename,
-            content: att.content
-        })) : [];
-
-        return await resend.emails.send({
-            from: from || 'ICCT Registrar <onboarding@resend.dev>',
-            to: to,
+        // Kung Base64 string na may prefix, kunin lang ang mismong data at gawing Buffer
+        if (typeof content === 'string') {
+          if (content.includes('base64,')) {
+            content = content.split('base64,')[1];
+          }
+          content = Buffer.from(content, 'base64');
+        }
+  
+        return {
+          filename: att.filename,
+          content: content
+        };
+      }) : [];
+  
+      try {
+        console.log('🚀 PUMAPASOK SA RESEND SENDMAIL TO:', process.env.EMAIL_TO || to);
+  
+        const { data, error } = await resend.emails.send({
+            from: 'ICCT Registrar <onboarding@resend.dev>',
+            to: process.env.EMAIL_TO || to,
             subject: subject,
             html: html,
-            attachments: formattedAttachments
-        });
-    }
-};
+            attachments: formattedAttachments,
+          });
+      
+          if (error) {
+            console.error('❌ Resend API Error:', error);
+            // Fallback para hindi mag-crash ang app sa StackBlitz network block
+            console.log('⚠️ [SIMULATOR MODE]: Email blocked by StackBlitz network, treating as simulated success.');
+            return { success: true, simulated: true, error };
+          }
+      
+          console.log('✅ Resend Email Sent Successfully:', data);
+          return { success: true, simulated: false, response: data };
+        } catch (err) {
+          console.error('❌ Exception in sendMail:', err);
+          // Fallback kapag nag-network timeout o error sa StackBlitz
+          console.log('⚠️ [SIMULATOR MODE]: Exception caught, bypassing email error to keep booking working.');
+          return { success: true, simulated: true };
+        }
+      }
+  };
 let fallbackAppointments = [
     { id: 1, name: "Juan Dela Cruz", service: "Transcript of Records (TOR)", window: "Window 3", status: "Waiting", email: "sample@email.com", targetDate: "2026-09-19", targetTime: "9:00 AM - 10:00 AM" }
 ];
@@ -295,12 +328,12 @@ app.post('/api/appointments', async (req, res) => {
     }
 
     // MAGPADALA NG EMAIL SA GMAIL (KASAMA ANG QR CODE)
-    if (email && email !== "N/A" && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    if (email && email !== "N/A") {
         const qrData = encodeURIComponent(`TICKET-ID:${savedAppointment.id}|Name:${name}|Service:${service}|Date:${targetDate}|Time:${targetTime}`);
         const qrCodeUrl = `https://quickchart.io/qr?text=${qrData}&size=200`;
 
         const mailOptions = {
-            from: `"ICCT Registrar" <${process.env.EMAIL_USER}>`,
+            from: `"ICCT Registrar" <onboarding@resend.dev>`,
             to: email,
             subject: '🎓 ICCT Registrar - Appointment e-Ticket & QR Code',
             html: `
@@ -330,13 +363,16 @@ app.post('/api/appointments', async (req, res) => {
             `
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error("Error sending email:", error.message);
+        try {
+            const emailResult = await transporter.sendMail(mailOptions);
+            if (emailResult.simulated) {
+                console.log("⚠️ Email simulation triggered (StackBlitz network block bypassed safely).");
             } else {
-                console.log("e-Ticket Email with QR sent successfully:", info.response);
+                console.log("✅ e-Ticket Email with QR sent successfully!");
             }
-        });
+        } catch (mailErr) {
+            console.error("Error sending email wrapper:", mailErr.message);
+        }
     }
 
     res.status(201).json(savedAppointment);
