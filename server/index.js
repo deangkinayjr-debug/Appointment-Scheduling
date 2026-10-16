@@ -335,10 +335,10 @@ app.post('/api/appointments', async (req, res) => {
         const mailOptions = {
             from: `"ICCT Registrar" <onboarding@resend.dev>`,
             to: email,
-            subject: '🎓 ICCT Registrar - Appointment e-Ticket & QR Code',
+            subject: 'Appointment Reservation E-Ticket & QR Code',
             html: `
                 <div style="font-family: Arial, sans-serif; padding: 25px; background-color: #0f172a; color: #ffffff; border-radius: 16px; max-width: 450px; margin: auto; text-align: center;">
-                    <h2 style="color: #a855f7; margin-bottom: 5px;">ICCT Registrar e-Ticket</h2>
+                    <h2 style="color: #a855f7; margin-bottom: 5px;">E-Ticket</h2>
                     <p style="color: #94a3b8; font-size: 13px;">Official Queueing Confirmation</p>
                     
                     <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin: 20px 0; text-align: left;">
