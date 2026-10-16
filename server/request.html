@@ -299,6 +299,32 @@
         .text-muted {
             color: #94a3b8 !important;
         }
+
+        /* ========================================================== */
+        /* CALENDAR DAY STATUS STYLES                                 */
+        /* ========================================================== */
+        .flatpickr-day.calendar-available {
+            background-color: rgba(16, 185, 129, 0.2) !important;
+            border-color: #10b981 !important;
+            color: #34d399 !important;
+            font-weight: bold;
+        }
+
+        .flatpickr-day.calendar-full {
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5 !important;
+            position: relative;
+        }
+        .flatpickr-day.calendar-full::after {
+            content: "FULL";
+            display: block;
+            font-size: 8px;
+            font-weight: 800;
+            color: #ef4444;
+            line-height: 1;
+            margin-top: -2px;
+        }
     </style>
 </head>
 <body>
@@ -388,6 +414,7 @@
     }
 
     let selectedDateStr = "";
+    let globalSlotStatusCache = {};
 
     async function initCalendar() {
         let enabledDates = [];
@@ -406,6 +433,54 @@
                 document.getElementById('selectedDateInput').value = dateStr;
                 document.getElementById('timeSlotGroup').style.display = 'block';
                 loadAvailableSlots(dateStr);
+            },
+            onDayCreate: async function(dObj, dStr, fp, dayElem) {
+                const year = dayElem.dateObj.getFullYear();
+                const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`;
+
+                // Tiyakin na kung HINDI kasama sa enabledDates na in-set ni admin, WALANG KULAY (GRAY)
+                if (enabledDates && enabledDates.length > 0 && !enabledDates.includes(dateKey)) {
+                    return;
+                }
+
+                if (globalSlotStatusCache[dateKey] !== undefined) {
+                    applyCalendarDayStyle(dayElem, globalSlotStatusCache[dateKey]);
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`/api/slot-status/${dateKey}`);
+                    const slotData = await res.json();
+                    
+                    let isFullyBooked = true;
+                    let hasAnySlot = false;
+
+                    if (slotData && typeof slotData === 'object' && Object.keys(slotData).length > 0) {
+                        for (let timeSlot of defaultTimeSlots) {
+                            let info = slotData[timeSlot];
+                            if (info !== undefined) {
+                                hasAnySlot = true;
+                                let limit = typeof info === 'object' ? info.limit : info;
+                                let booked = typeof info === 'object' ? (info.booked || 0) : 0;
+                                if (limit > 0 && booked < limit) {
+                                    isFullyBooked = false; // May available pa!
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        isFullyBooked = false;
+                        hasAnySlot = false;
+                    }
+
+                    const statusResult = { hasAnySlot, isFullyBooked };
+                    globalSlotStatusCache[dateKey] = statusResult;
+                    applyCalendarDayStyle(dayElem, statusResult);
+                } catch (err) {
+                    // Ignore error
+                }
             }
         };
 
@@ -414,6 +489,18 @@
         }
 
         flatpickr("#datePicker", calendarConfig);
+    }
+
+    function applyCalendarDayStyle(dayElem, status) {
+        if (!status.hasAnySlot) {
+            return; // Normal gray lang kapag walang slot
+        }
+        
+        if (status.isFullyBooked) {
+            dayElem.classList.add('calendar-full'); // Red + FULL mark kapag naubos na slots
+        } else {
+            dayElem.classList.add('calendar-available'); // Green kapag may available pa
+        }
     }
 
     async function loadAvailableSlots(date) {
