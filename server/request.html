@@ -20,7 +20,7 @@
 
         body {
             min-height: 100vh;
-            background: #0f172a;
+            background: radial-gradient(circle at 20% 20%, #1e293b 0%, #0f172a 50%, #020617 100%);
             color: #f8fafc;
             display: flex;
             justify-content: center;
@@ -30,27 +30,27 @@
             overflow-x: hidden;
         }
 
-        /* Glowing Background Orbs */
+        /* Glowing Blue Background Orbs */
         .bg-blob-1, .bg-blob-2 {
             position: absolute;
             width: 400px;
             height: 400px;
             border-radius: 50%;
-            filter: blur(80px);
+            filter: blur(100px);
             z-index: 0;
-            opacity: 0.4;
+            opacity: 0.35;
             animation: float 10s infinite alternate ease-in-out;
             pointer-events: none;
         }
 
         .bg-blob-1 {
-            background: #6366f1;
+            background: #2563eb;
             top: -50px;
             left: -50px;
         }
 
         .bg-blob-2 {
-            background: #ec4899;
+            background: #0284c7;
             bottom: -50px;
             right: -50px;
             animation-delay: -5s;
@@ -71,18 +71,19 @@
         }
 
         .card {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
             border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                        0 0 25px rgba(37, 99, 235, 0.15);
             overflow: hidden;
         }
 
         .card-header {
             background: transparent;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.1);
             text-align: center;
             padding: 30px 20px 20px 20px;
         }
@@ -118,10 +119,10 @@
             width: 100%;
             padding: 12px 15px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid #334155;
             font-size: 0.9rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: rgba(15, 23, 42, 0.6);
+            background-color: rgba(15, 23, 42, 0.8);
             color: #f8fafc;
             outline: none;
             transition: all 0.3s ease;
@@ -132,9 +133,9 @@
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            background-color: rgba(15, 23, 42, 0.9);
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+            background-color: rgba(15, 23, 42, 0.95);
         }
 
         .form-select option {
@@ -220,18 +221,19 @@
             padding: 14px;
             border-radius: 12px;
             border: none;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
             font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.5);
         }
 
         .btn-primary:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             transform: translateY(-2px);
-            box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.6);
+            box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.7);
         }
 
         /* Ticket Container Styles */
@@ -242,7 +244,7 @@
             padding: 24px;
             background: rgba(15, 23, 42, 0.8);
             border-radius: 16px;
-            border: 1px dashed rgba(99, 102, 241, 0.4);
+            border: 1px dashed rgba(56, 189, 248, 0.3);
         }
 
         #ticketContainer h4 {
@@ -440,7 +442,6 @@
                 const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
                 const dateKey = `${year}-${month}-${day}`;
 
-                // Tiyakin na kung HINDI kasama sa enabledDates na in-set ni admin, WALANG KULAY (GRAY)
                 if (enabledDates && enabledDates.length > 0 && !enabledDates.includes(dateKey)) {
                     return;
                 }
@@ -465,7 +466,7 @@
                                 let limit = typeof info === 'object' ? info.limit : info;
                                 let booked = typeof info === 'object' ? (info.booked || 0) : 0;
                                 if (limit > 0 && booked < limit) {
-                                    isFullyBooked = false; // May available pa!
+                                    isFullyBooked = false;
                                     break;
                                 }
                             }
@@ -493,13 +494,13 @@
 
     function applyCalendarDayStyle(dayElem, status) {
         if (!status.hasAnySlot) {
-            return; // Normal gray lang kapag walang slot
+            return;
         }
         
         if (status.isFullyBooked) {
-            dayElem.classList.add('calendar-full'); // Red + FULL mark kapag naubos na slots
+            dayElem.classList.add('calendar-full');
         } else {
-            dayElem.classList.add('calendar-available'); // Green kapag may available pa
+            dayElem.classList.add('calendar-available');
         }
     }
 
