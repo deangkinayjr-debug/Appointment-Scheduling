@@ -76,8 +76,9 @@ const customTransporter = {
             return { success: true, simulated: false, response: info };
 
         } catch (err) {
-            console.error('❌ Nodemailer Error:', err);
-            return { success: true, simulated: true, error: err };
+            console.error('❌ Nodemailer Actual Error:', err);
+            // Tanggalin muna natin ang simulated fallback dito para makita natin ang totoong error kung sakaling magkulang
+            throw err; 
         }
     }
 };
