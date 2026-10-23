@@ -74,17 +74,12 @@ const transporter = {
         }
       }
   };
-let fallbackAppointments = [
-    { id: 1, name: "Juan Dela Cruz", service: "Transcript of Records (TOR)", window: "Window 3", status: "Waiting", email: "sample@email.com", targetDate: "2026-09-19", targetTime: "9:00 AM - 10:00 AM" }
-];
+let fallbackAppointments = [];
 
 let availableSlots = [];
 let timeSlotLimits = {}; // Dito sine-save ng staff ang limit bawat oras
 
-const registeredStudents = [
-    { fullName: "Jan Cristan R. Deangkinay", studentNumber: "CA202306112", email: "jan@icct.edu.ph", password: "password123" },
-    { fullName: "Juan Dela Cruz", studentNumber: "CA202300000", email: "juan@icct.edu.ph", password: "password123" }
-];
+const registeredStudents = [];
 
 function getWindowForService(service) {
     const window1 = ['Certificate of Enrollment', 'Certification of Grades', 'Summary of Grades'];
