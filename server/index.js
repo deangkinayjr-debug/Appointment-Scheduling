@@ -4,8 +4,15 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const { createClient } = require('@supabase/supabase-js');
-const { Resend } = require('resend');
-const resend = new Resend(process.env.RESEND_API_KEY);
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -23,57 +30,58 @@ if (supabaseUrl && supabaseKey) {
     supabase = createClient(supabaseUrl, supabaseKey);
 }
 
-// Resend Transporter Wrapper para hindi na baguhin ang sendMail calls mo
-const transporter = {
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+// Nodemailer Wrapper para sa sendMail
+const customTransporter = {
     sendMail: async (mailOptions) => {
-      const { from, to, subject, html, attachments } = mailOptions;
-  
-      // Convert attachments para sa Resend API
-      const formattedAttachments = attachments ? attachments.map(att => {
-        let content = att.content;
+        const { from, to, subject, html, attachments } = mailOptions;
         
-        // Kung Base64 string na may prefix, kunin lang ang mismong data at gawing Buffer
-        if (typeof content === 'string') {
-          if (content.includes('base64,')) {
-            content = content.split('base64,')[1];
-          }
-          content = Buffer.from(content, 'base64');
-        }
-  
-        return {
-          filename: att.filename,
-          content: content
-        };
-      }) : [];
-  
-      try {
-        console.log('🚀 PUMAPASOK SA RESEND SENDMAIL TO:', process.env.EMAIL_TO || to);
-  
-        const { data, error } = await resend.emails.send({
-            from: 'ICCT Registrar <onboarding@resend.dev>',
-            to: process.env.EMAIL_TO || to,
-            subject: subject,
-            html: html,
-            attachments: formattedAttachments,
-          });
-      
-          if (error) {
-            console.error('❌ Resend API Error:', error);
-            // Fallback para hindi mag-crash ang app sa StackBlitz network block
-            console.log('⚠️ [SIMULATOR MODE]: Email blocked by StackBlitz network, treating as simulated success.');
-            return { success: true, simulated: true, error };
-          }
-      
-          console.log('✅ Resend Email Sent Successfully:', data);
-          return { success: true, simulated: false, response: data };
+        // Gamitin ang totoong 'to' email o i-override kung may process.env.EMAIL_TO ka
+        const recipient = process.env.EMAIL_TO || to;
+
+        const formattedAttachments = attachments ? attachments.map(att => {
+            let content = att.content;
+            if (typeof content === 'string') {
+                if (content.includes('base64,')) {
+                    content = content.split('base64,')[1];
+                }
+                content = Buffer.from(content, 'base64');
+            }
+            return {
+                filename: att.filename,
+                content: content
+            };
+        }) : [];
+
+        try {
+            console.log('🚀 PUMAPASOK SA NODEMAILER SENDMAIL TO:', recipient);
+
+            const mailOptionsNodemailer = {
+                from: `"ICCT Registrar" <${process.env.EMAIL_USER}>`,
+                to: recipient,
+                subject: subject,
+                html: html,
+                attachments: formattedAttachments
+            };
+
+            const info = await transporter.sendMail(mailOptionsNodemailer);
+            console.log('✅ Nodemailer Email Sent Successfully:', info.messageId);
+            return { success: true, simulated: false, response: info };
+
         } catch (err) {
-          console.error('❌ Exception in sendMail:', err);
-          // Fallback kapag nag-network timeout o error sa StackBlitz
-          console.log('⚠️ [SIMULATOR MODE]: Exception caught, bypassing email error to keep booking working.');
-          return { success: true, simulated: true };
+            console.error('❌ Nodemailer Error:', err);
+            return { success: true, simulated: true, error: err };
         }
-      }
-  };
+    }
+};
+
 let fallbackAppointments = [];
 
 let availableSlots = [];
