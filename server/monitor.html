@@ -265,70 +265,85 @@
 
     <script>
         async function fetchMonitorData() {
-            try {
-                const response = await fetch('/api/appointments');
-                const appointments = await response.json();
+        try {
+            const response = await fetch('/api/appointments');
+            const appointments = await response.json();
 
-                const waitingList = document.getElementById('waitingList');
-                const readyList = document.getElementById('readyList');
+            const waitingList = document.getElementById('waitingList');
+            const readyList = document.getElementById('readyList');
 
-                waitingList.innerHTML = '';
-                readyList.innerHTML = '';
+            waitingList.innerHTML = '';
+            readyList.innerHTML = '';
 
-                // Salain ang mga naka-waiting at ready for pickup
-                const waitingItems = appointments.filter(item => !item.status || item.status === 'Waiting');
-                const readyItems = appointments.filter(item => item.status === 'Ready for Pickup');
+            // Kunin ang petsa ngayon sa YYYY-MM-DD format (local time)
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
 
-                // Render Waiting Queue
-                if (waitingItems.length === 0) {
-                    waitingList.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fa-solid fa-mug-hot"></i>
-                            Wala pang nakapila sa kasalukuyan.
-                        </div>`;
-                } else {
-                    waitingItems.forEach(item => {
-                        const li = document.createElement('li');
-                        li.className = 'queue-item';
-                        li.innerHTML = `
-                            <div class="queue-info">
-                                <h3>${item.name}</h3>
-                                <p><i class="fa-solid fa-file-lines"></i> ${item.service}</p>
-                                ${item.window ? `<div class="window-tag"><i class="fa-solid fa-desktop"></i> ${item.window}</div>` : ''}
-                            </div>
-                            <span class="badge badge-waiting">Waiting</span>
-                        `;
-                        waitingList.appendChild(li);
-                    });
-                }
+            // Isalain ang appointments para sa ngayong araw lang
+            const todayAppointments = appointments.filter(item => {
+                const itemDate = item.date || item.targetPickupDate || item.pickupDate || '';
+                return itemDate.includes(todayStr);
+            });
 
-                // Render Ready for Pickup
-                if (readyItems.length === 0) {
-                    readyList.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fa-solid fa-folder-open"></i>
-                            No documents ready for pickup.
-                        </div>`;
-                } else {
-                    readyItems.forEach(item => {
-                        const li = document.createElement('li');
-                        li.className = 'queue-item';
-                        li.innerHTML = `
-                            <div class="queue-info">
-                                <h3>${item.name}</h3>
-                                <p><i class="fa-solid fa-file-lines"></i> ${item.service}</p>
-                                ${item.window ? `<div class="window-tag"><i class="fa-solid fa-desktop"></i> ${item.window}</div>` : ''}
-                            </div>
-                            <span class="badge badge-ready">Ready</span>
-                        `;
-                        readyList.appendChild(li);
-                    });
-                }
+            // Salain ang mga naka-waiting at ready for pickup mula sa today's appointments
+            const waitingItems = todayAppointments.filter(item => !item.status || item.status === 'Waiting');
+            const readyItems = todayAppointments.filter(item => item.status === 'Ready for Pickup');
 
-            } catch (err) {
-                console.error("Error fetching monitor queue:", err);
+            // Render Waiting Queue
+            if (waitingItems.length === 0) {
+                waitingList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-mug-hot"></i>
+                        Wala pang nakapila sa kasalukuyan.
+                    </div>
+                `;
+            } else {
+                waitingItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'queue-item';
+                    li.innerHTML = `
+                        <div class="queue-info">
+                            <h3>${item.name}</h3>
+                            <p><i class="fa-solid fa-file-lines"></i> ${item.service}</p>
+                            ${item.window ? `<div class="window-tag"><i class="fa-solid fa-desktop"></i> ${item.window}</div>` : ''}
+                        </div>
+                        <span class="badge badge-waiting">Waiting</span>
+                    `;
+                    waitingList.appendChild(li);
+                });
             }
+
+            // Render Ready for Pickup
+            if (readyItems.length === 0) {
+                readyList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-folder-open"></i>
+                        No documents ready for pickup.
+                    </div>
+                `;
+            } else {
+                readyItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'queue-item';
+                    li.innerHTML = `
+                        <div class="queue-info">
+                            <h3>${item.name}</h3>
+                            <p><i class="fa-solid fa-file-lines"></i> ${item.service}</p>
+                            ${item.window ? `<div class="window-tag"><i class="fa-solid fa-desktop"></i> ${item.window}</div>` : ''}
+                        </div>
+                        <span class="badge badge-ready">Ready</span>
+                    `;
+                    readyList.appendChild(li);
+                });
+            }
+
+        } catch (err) {
+            console.error("Error fetching monitor queue:", err);
         }
+    }
 
         // Tawagin agad at i-set ang auto-refresh kada 3 segundo
         fetchMonitorData();
