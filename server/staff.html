@@ -328,10 +328,25 @@
             <button type="button" class="btn-primary" onclick="saveTimeLimits()"><i class="fa-solid fa-save"></i> Save Time Limits</button>
         </div>
 
-        <h3 style="color: #f8fafc; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-users-line" style="color: #34d399;"></i> Active Student Queue</h3>
-        <ul id="queueList">
-            <div class="empty-state">Loading queue data...</div>
-        </ul>
+        <!-- SECTION 1: TODAY'S ACTIVE QUEUE -->
+<div style="margin-bottom: 30px;">
+    <h3 style="color: #38bdf8; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-users"></i> Today's Active Queue
+    </h3>
+    <ul id="todayQueueList" style="list-style: none; padding: 0;">
+        <div class="empty-state">Loading today's queue...</div>
+    </ul>
+</div>
+
+<!-- SECTION 2: ADVANCE / UPCOMING BOOKINGS -->
+<div>
+    <h3 style="color: #c084fc; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-calendar-days"></i> Advance / Upcoming Bookings
+    </h3>
+    <ul id="advanceQueueList" style="list-style: none; padding: 0;">
+        <div class="empty-state" style="color: #94a3b8; font-style: italic;">Loading advance bookings...</div>
+    </ul>
+</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -455,8 +470,13 @@
     try {
         const response = await fetch('/api/appointments');
         const appointments = await response.json();
-        const list = document.getElementById('queueList');
-        list.innerHTML = '';
+        
+        // Kunin ang mga container (Siguraduhin na meron kang id="todayQueueList" at id="advanceQueueList" sa HTML mo)
+        const todayList = document.getElementById('todayQueueList') || document.getElementById('queuelist');
+        const advanceList = document.getElementById('advanceQueueList');
+
+        if (todayList) todayList.innerHTML = '';
+        if (advanceList) advanceList.innerHTML = '';
 
         // 1. Kunin ang petsa ngayon sa YYYY-MM-DD format (local time)
         const now = new Date();
@@ -465,38 +485,68 @@
         const day = String(now.getDate()).padStart(2, '0');
         const todayStr = `${year}-${month}-${day}`;
 
-        // 2. Isalain ang appointments para sa ngayong araw lang
+        // 2. I-filter ang appointments para sa NGAYONG ARAW lang
         const todayAppointments = appointments.filter(item => {
             const itemDate = item.targetDate || item.date || item.targetPickupDate || item.pickupDate || '';
             return itemDate.includes(todayStr);
         });
 
-        if (todayAppointments.length === 0) {
-            list.innerHTML = '<div class="empty-state">No current queue or bookings found for today.</div>';
-            return;
+        // 3. I-filter ang appointments para sa ADVANCE / FUTURE DATES
+        const advanceAppointments = appointments.filter(item => {
+            const itemDate = item.targetDate || item.date || item.targetPickupDate || item.pickupDate || '';
+            return itemDate > todayStr;
+        });
+
+        // Render Today's Appointments
+        if (todayList) {
+            if (todayAppointments.length === 0) {
+                todayList.innerHTML = `<div class="empty-state">No current queue or bookings found for today.</div>`;
+            } else {
+                todayAppointments.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div>
+                            <strong style="font-size: 1.05rem; color: #f8fafc;">${item.name}</strong><br>
+                            <span style="color: #38bdf8; font-size: 0.85rem;"><i class="fa-solid fa-file-lines"></i> ${item.service}</span> &bull; 
+                            <span style="color: #fbbdef; font-size: 0.85rem; font-weight: 500;"><i class="fa-solid fa-calendar"></i> Target Pickup: ${item.targetDate || 'not specified'} (${item.targetTime || 'time unspecified'})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select onchange="updateStatus('${item.id}', this.value)">
+                                <option value="Waiting" ${item.status === 'Waiting' ? 'selected' : ''}>Waiting</option>
+                                <option value="Ready for Pickup" ${item.status === 'Ready for Pickup' ? 'selected' : ''}>Ready for Pickup</option>
+                            </select>
+                            <button class="btn-claimed" onclick="markAsClaimed('${item.id}', '${item.name}')">
+                                <i class="fa-solid fa-check"></i> Claimed
+                            </button>
+                        </div>
+                    `;
+                    todayList.appendChild(li);
+                });
+            }
         }
 
-        // 3. I-render ang mga appointments ngayong araw
-        todayAppointments.forEach(item => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <div>
-                    <strong style="font-size: 1.05rem; color: #f8fafc;">${item.name}</strong><br>
-                    <span style="color: #94a3b8; font-size: 0.85rem;"><i class="fa-solid fa-file-lines"></i> ${item.service}</span> &bull;
-                    <span style="color: #38bdf8; font-size: 0.85rem; font-weight: 600;"><i class="fa-solid fa-calendar"></i> Target Pickup: ${item.targetDate || 'Not specified'} (${item.targetTime || 'Time unspecified'})</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <select onchange="updateStatus('${item.id}', this.value)">
-                        <option value="Waiting" ${item.status === 'Waiting' ? 'selected' : ''}>Waiting</option>
-                        <option value="Ready for Pickup" ${item.status === 'Ready for Pickup' ? 'selected' : ''}>Ready for Pickup</option>
-                    </select>
-                    <button class="btn-claimed" onclick="markAsClaimed('${item.id}', '${item.name}')">
-                        <i class="fa-solid fa-check"></i> Claimed
-                    </button>
-                </div>
-            `;
-            list.appendChild(li);
-        });
+        // Render Advance Bookings
+        if (advanceList) {
+            if (advanceAppointments.length === 0) {
+                advanceList.innerHTML = `<div class="empty-state" style="color: #94a3b8; font-style: italic;">No advance bookings found.</div>`;
+            } else {
+                advanceAppointments.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div>
+                            <strong style="font-size: 1.05rem; color: #f8fafc;">${item.name}</strong><br>
+                            <span style="color: #38bdf8; font-size: 0.85rem;"><i class="fa-solid fa-file-lines"></i> ${item.service}</span> &bull; 
+                            <span style="color: #c084fc; font-size: 0.85rem; font-weight: 500;"><i class="fa-solid fa-calendar-days"></i> Scheduled Date: ${item.targetDate || 'not specified'} (${item.targetTime || 'time unspecified'})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="background: rgba(192, 132, 252, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700;">Advance Booking</span>
+                        </div>
+                    `;
+                    advanceList.appendChild(li);
+                });
+            }
+        }
+
     } catch (err) {
         console.error("Error fetching queue:", err);
     }
