@@ -337,7 +337,7 @@ app.post('/api/appointments', async (req, res) => {
                 
                 <!-- Header -->
                 <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 20px; text-align: center; color: #ffffff;">
-                    <h2 style="margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">E-Ticket Confirmation</h2>
+                    <h2 style="margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">E-Ticket </h2>
                     <p style="margin: 5px 0 0 0; font-size: 12px; color: #93c5fd;">ICCT Registrar Official Queue</p>
                 </div>
 
