@@ -284,10 +284,9 @@
 
             // Isalain ang appointments para sa ngayong araw lang
             const todayAppointments = appointments.filter(item => {
-                const itemDate = item.date || item.targetPickupDate || item.pickupDate || '';
-                return itemDate.includes(todayStr);
-            });
-
+            const itemDate = item.targetDate || item.date || item.targetPickupDate || item.pickupDate || '';
+            return itemDate.includes(todayStr);
+        });
             // Salain ang mga naka-waiting at ready for pickup mula sa today's appointments
             const waitingItems = todayAppointments.filter(item => !item.status || item.status === 'Waiting');
             const readyItems = todayAppointments.filter(item => item.status === 'Ready for Pickup');
