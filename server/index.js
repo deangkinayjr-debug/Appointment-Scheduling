@@ -332,29 +332,65 @@ app.post('/api/appointments', async (req, res) => {
             to: email,
             subject: 'Appointment Reservation E-Ticket & QR Code',
             html: `
-                <div style="font-family: Arial, sans-serif; padding: 25px; background-color: #0f172a; color: #ffffff; border-radius: 16px; max-width: 450px; margin: auto; text-align: center;">
-                    <h2 style="color: #a855f7; margin-bottom: 5px;">E-Ticket</h2>
-                    <p style="color: #94a3b8; font-size: 13px;">Official Queueing Confirmation</p>
-                    
-                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin: 20px 0; text-align: left;">
-                        <p style="margin: 5px 0;"><strong>Name:</strong> ${name}</p>
-                        <p style="margin: 5px 0;"><strong>Service:</strong> ${service}</p>
-                        <p style="margin: 5px 0;"><strong>Date:</strong> ${targetDate}</p>
-                        <p style="margin: 5px 0;"><strong>Time Slot:</strong> ${targetTime}</p>
-                        <p style="margin: 5px 0;"><strong>Window:</strong> ${assignedWindow}</p>
-                        <p style="margin: 5px 0;"><strong>Ticket ID:</strong> #${savedAppointment.id}</p>
-                    </div>
-
-                    <p style="color: #cbd5e1; font-size: 14px;">Your Official Entry QR Code:</p>
-                    
-                    <div style="background: white; padding: 15px; display: inline-block; border-radius: 12px; margin: 10px 0;">
-                        <img src="${qrCodeUrl}" alt="e-Ticket QR Code" style="width: 180px; height: 180px; display: block;" />
-                    </div>
-
-                    <p style="font-size: 12px; color: #94a3b8; margin-top: 15px;">
-                       Please present this QR code at your designated Window on your appointment date.
-                    </p>
+            <div style="background-color: #0b132b; padding: 25px 10px; font-family: 'Segoe UI', Arial, sans-serif;">
+            <div style="max-width: 420px; margin: 0 auto; background-color: #0f172a; border: 2px solid #38bdf8; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 20px; text-align: center; color: #ffffff;">
+                    <h2 style="margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">E-Ticket Confirmation</h2>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #93c5fd;">ICCT Registrar Official Queue</p>
                 </div>
+
+                <!-- Body Details -->
+                <div style="padding: 24px; color: #f8fafc;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <span style="background-color: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); padding: 5px 14px; border-radius: 50px; font-size: 11px; font-weight: bold;">
+                            ✓ CONFIRMED
+                        </span>
+                    </div>
+
+                    <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 8px 0; color: #94a3b8;">Name:</td>
+                            <td style="padding: 8px 0; color: #ffffff; font-weight: bold; text-align: right;">${name}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #94a3b8;">Service:</td>
+                            <td style="padding: 8px 0; color: #ffffff; font-weight: bold; text-align: right;">${service}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #94a3b8;">Date:</td>
+                            <td style="padding: 8px 0; color: #38bdf8; font-weight: bold; text-align: right;">${targetDate}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #94a3b8;">Time Slot:</td>
+                            <td style="padding: 8px 0; color: #38bdf8; font-weight: bold; text-align: right;">${targetTime}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #94a3b8;">Window:</td>
+                            <td style="padding: 8px 0; color: #ffffff; font-weight: bold; text-align: right;">${assignedWindow}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #94a3b8;">Ticket ID:</td>
+                            <td style="padding: 8px 0; color: #c084fc; font-weight: bold; font-family: monospace; text-align: right;">#${savedAppointment.id}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Dotted Divider -->
+                <div style="border-top: 2px dashed rgba(255, 255, 255, 0.15); margin: 0 15px;"></div>
+
+                <!-- QR Code Section -->
+                <div style="padding: 24px; text-align: center; background-color: rgba(15, 23, 42, 0.5);">
+                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #94a3b8;">Your Official Entry QR Code:</p>
+                    <div style="display: inline-block; background: #ffffff; padding: 12px; border-radius: 12px;">
+                        <img src="${qrCodeUrl}" alt="e-Ticket QR Code" style="width: 160px; height: 160px; display: block;" />
+                    </div>
+                    <p style="margin: 12px 0 0 0; font-size: 11px; color: #64748b;">Please present this QR code at your designated Window on your appointment date.</p>
+                </div>
+
+            </div>
+        </div>
             `
         };
 
