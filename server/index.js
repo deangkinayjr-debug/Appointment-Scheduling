@@ -452,7 +452,13 @@ app.put('/api/appointments/:id', async (req, res) => {
 app.get('/api/slots', (req, res) => {
     res.json(availableSlots);
 });
+app.get('/admin', (req, res) => {
+    res.sendFile(__dirname + '/admin-login.html');
+});
 
+app.get('/monitor', (req, res) => {
+    res.sendFile(__dirname + '/monitor.html');
+});
 app.post('/api/slots', (req, res) => {
     const { date, limit } = req.body;
     if (!date) {
