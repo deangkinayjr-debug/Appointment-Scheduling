@@ -7,7 +7,7 @@ async function testEmail() {
   try {
     console.log('Sinusubukang magpadala ng email gamit ang API key...');
     const data = await resend.emails.send({
-      from: 'ICCT Registrar <onboarding@resend.dev>',
+      from: 'ICCT Registrar <registrar@system-queue.online>',
       to: process.env.EMAIL_TO,
       subject: 'Test Resend Email',
       html: '<p>Gumagana na ang Resend sa app mo!</p>'

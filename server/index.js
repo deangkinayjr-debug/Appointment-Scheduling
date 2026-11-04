@@ -50,7 +50,7 @@ const transporter = {
         console.log('🚀 PUMAPASOK SA RESEND SENDMAIL TO:', process.env.EMAIL_TO || to);
   
         const { data, error } = await resend.emails.send({
-            from: 'ICCT Registrar <onboarding@resend.dev>',
+            from: 'ICCT Registrar <registrar@system-queue.online>',
             to: process.env.EMAIL_TO || to,
             subject: subject,
             html: html,
