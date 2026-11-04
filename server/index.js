@@ -361,18 +361,6 @@ const qrCodeUrl = `https://quickchart.io/qr?text=${encodeURIComponent(verifyUrl)
                             <td style="padding: 8px 0; color: #94a3b8;">Date:</td>
                             <td style="padding: 8px 0; color: #38bdf8; font-weight: bold; text-align: right;">${targetDate}</td>
                         </tr>
-                        <tr>
-                            <td style="padding: 8px 0; color: #94a3b8;">Time Slot:</td>
-                            <td style="padding: 8px 0; color: #38bdf8; font-weight: bold; text-align: right;">${targetTime}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px 0; color: #94a3b8;">Window:</td>
-                            <td style="padding: 8px 0; color: #ffffff; font-weight: bold; text-align: right;">${assignedWindow}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px 0; color: #94a3b8;">Ticket ID:</td>
-                            <td style="padding: 8px 0; color: #c084fc; font-weight: bold; font-family: monospace; text-align: right;">#${savedAppointment.id}</td>
-                        </tr>
                     </table>
                 </div>
 
