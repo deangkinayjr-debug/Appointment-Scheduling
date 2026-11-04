@@ -328,7 +328,7 @@ app.post('/api/appointments', async (req, res) => {
         const qrCodeUrl = `https://quickchart.io/qr?text=${qrData}&size=200`;
 
         const mailOptions = {
-            from: `"ICCT Registrar" <onboarding@resend.dev>`,
+            from: `"ICCT Registrar" <registrar@system-queue.online>`,
             to: email,
             subject: 'Appointment Reservation E-Ticket & QR Code',
             html: `
