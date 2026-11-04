@@ -657,19 +657,19 @@ app.get('/verify', (req, res) => {
                 </div>
                 <div class="pass-body">
                     <div class="info-row">
-                        <span class="label">Pangalan:</span>
+                        <span class="label">Name:</span>
                         <span class="value">${appointment.name}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Serbisyo:</span>
+                        <span class="label">Service:</span>
                         <span class="value">${appointment.service}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Petsa:</span>
+                        <span class="label">Date:</span>
                         <span class="value highlight">${appointment.targetDate}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Oras:</span>
+                        <span class="label">Time:</span>
                         <span class="value highlight">${appointment.targetTime}</span>
                     </div>
                     <div class="info-row">
