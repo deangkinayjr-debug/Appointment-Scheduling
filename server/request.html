@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Appointment | ICCT Registrar</title>
+    <title>Student's Dashboard | ICCT Registrar</title>
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -24,7 +24,7 @@
             color: #f8fafc;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 30px 20px;
             position: relative;
             overflow-x: hidden;
@@ -61,13 +61,139 @@
             100% { transform: translate(30px, 50px) scale(1.1); }
         }
 
-        /* Glassmorphism Card Container */
-        .container {
-            max-width: 540px;
+        /* Layout Container */
+        .dashboard-container {
+            max-width: 1100px;
             width: 100%;
             margin: auto;
             position: relative;
+            z-index: 10;
+        }
+
+        /* Top Bar with Logo & User Menu */
+        .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 15px 25px;
+            border-radius: 16px;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-section img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+        .brand-section h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #f8fafc;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-section p {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        /* Dropdown Menu */
+        .user-menu-wrapper {
+            position: relative;
+        }
+
+        .user-dropdown-btn {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #f8fafc;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .user-dropdown-btn:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            min-width: 200px;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-content button {
+            width: 100%;
+            text-align: left;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .dropdown-content button:hover {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+        }
+
+        .dropdown-content hr {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin: 0;
+        }
+
+        /* Grid Layout for Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            position: relative;
             z-index: 1;
+        }
+
+        @media (max-width: 850px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .card {
@@ -75,36 +201,35 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(56, 189, 248, 0.2);
-            border-radius: 24px;
+            border-radius: 20px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6),
                         0 0 25px rgba(37, 99, 235, 0.15);
-            overflow: hidden;
+            margin-bottom: 20px;
         }
 
         .card-header {
             background: transparent;
             border-bottom: 1px solid rgba(56, 189, 248, 0.1);
-            text-align: center;
-            padding: 30px 20px 20px 20px;
+            padding: 20px;
         }
 
         .card-header h3 {
             color: #f8fafc;
-            margin: 0 0 6px 0;
-            font-size: 1.5rem;
+            margin: 0 0 4px 0;
+            font-size: 1.2rem;
             font-weight: 800;
             letter-spacing: -0.5px;
         }
 
         .card-header p {
             color: #94a3b8;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 500;
             margin: 0;
         }
 
         .card-body {
-            padding: 30px;
+            padding: 20px;
         }
 
         .form-label {
@@ -117,10 +242,10 @@
 
         .form-control, .form-select {
             width: 100%;
-            padding: 12px 15px;
-            border-radius: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
             border: 1px solid #334155;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: rgba(15, 23, 42, 0.8);
             color: #f8fafc;
@@ -144,22 +269,22 @@
         }
 
         .mb-3 {
-            margin-bottom: 18px !important;
+            margin-bottom: 15px !important;
         }
 
         /* Slot Buttons Styling */
         .btn-slot {
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: left;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: 12px;
+            border-radius: 10px;
             font-weight: 500;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             transition: all 0.2s;
-            padding: 12px 16px;
+            padding: 10px 14px;
         }
 
         .btn-slot input[type="radio"] {
@@ -199,9 +324,9 @@
         }
 
         .badge {
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 600;
         }
 
@@ -218,52 +343,52 @@
         /* Primary Submit Button */
         .btn-primary {
             width: 100%;
-            padding: 14px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 10px;
             border: none;
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.5);
+            box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.5);
         }
 
         .btn-primary:hover {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             transform: translateY(-2px);
-            box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.7);
+            box-shadow: 0 12px 20px -4px rgba(37, 99, 235, 0.7);
         }
 
         /* Ticket Container Styles */
         #ticketContainer {
             display: none;
             text-align: center;
-            margin-top: 20px;
-            padding: 24px;
+            margin-top: 15px;
+            padding: 20px;
             background: rgba(15, 23, 42, 0.8);
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1px dashed rgba(56, 189, 248, 0.3);
         }
 
         #ticketContainer h4 {
             color: #34d399;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         #ticketInfo {
             color: #f8fafc;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             line-height: 1.5;
             white-space: pre-line;
         }
 
         #qrcode {
             background: white;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 10px;
+            border-radius: 10px;
             display: inline-block;
         }
 
@@ -271,9 +396,9 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #cbd5e1;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -284,27 +409,109 @@
             color: white;
         }
 
-        /* Log out link */
-        .text-center.mt-3 a {
-            color: #fca5a5;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-
-        .text-center.mt-3 a:hover {
-            color: #ef4444;
-            text-decoration: underline !important;
-        }
-
-        /* Text muted adjustments */
         .text-muted {
             color: #94a3b8 !important;
         }
 
-        /* ========================================================== */
-        /* CALENDAR DAY STATUS STYLES                                 */
-        /* ========================================================== */
+        /* Holiday Cards */
+        .holiday-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(56, 189, 248, 0.1);
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .holiday-date {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .holiday-info h5 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 0;
+        }
+
+        .holiday-info span {
+            font-size: 0.72rem;
+            color: #34d399;
+        }
+
+        /* Appointment History List */
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .history-item {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+
+        .history-item .h-top {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 2px;
+        }
+
+        .history-item .h-details {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        /* Modals Overlay */
+        .modal-backdrop-custom {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .modal-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 15px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Flatpickr Custom Overrides */
         .flatpickr-day.calendar-available {
             background-color: rgba(16, 185, 129, 0.2) !important;
             border-color: #10b981 !important;
@@ -335,66 +542,168 @@
 <div class="bg-blob-1"></div>
 <div class="bg-blob-2"></div>
 
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <h3>Book Appointment</h3>
-            <p class="mb-0">Choose your service, date, and time slot</p>
+<div class="dashboard-container">
+    <!-- Top Navbar with Profile Dropdown -->
+    <div class="top-navbar">
+        <div class="brand-section">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3WbdaT6Kgb05mJ_UMvBDcYFwEUu_EGq48bkra_zzI4Q&s=10" alt="ICCT Logo">
+            <div>
+                <h1>Student's Dashboard</h1>
+                <p><i class="fa-regular fa-calendar"></i> ICCT Registrar Queue System</p>
+            </div>
         </div>
-        <div class="card-body p-4">
-            <form id="appointmentForm">
-                <div class="mb-3">
-                    <label for="nameInput" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="nameInput" required>
-                </div>
-                <div class="mb-3">
-                    <label for="emailInput" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="emailInput" required>
-                </div>
-                <div class="mb-3">
-                    <label for="serviceSelect" class="form-label">Type of Service</label>
-                    <select class="form-select" id="serviceSelect" required>
-                        <option value="" selected disabled>Select a Service...</option>
-                        <option value="Transcript of Records (TOR)">Transcript of Records (TOR)</option>
-                        <option value="Diploma">Diploma</option>
-                        <option value="Certificate of Enrollment">Certificate of Enrollment</option>
-                        <option value="Certification of Grades">Certification of Grades</option>
-                        <option value="Summary of Grades">Summary of Grades</option>
-                        <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
-                        <option value="Honorable Dismissal">Honorable Dismissal</option>
-                    </select>
-                </div>
+        <div class="user-menu-wrapper">
+            <button class="user-dropdown-btn" onclick="toggleMenu()">
+                <i class="fa-solid fa-user-circle"></i> <span id="navUsername">Hello, Student</span> <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i>
+            </button>
+            <div id="userDropdown" class="dropdown-content">
+                <button onclick="openEditProfileModal()"><i class="fa-solid fa-user-pen"></i> Edit Profile</button>
+                <button onclick="openSupportModal()"><i class="fa-solid fa-headset"></i> Contact Support</button>
+                <hr>
+                <button onclick="logoutUser()" style="color: #fca5a5;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </div>
+    </div>
 
-                <div class="mb-3">
-                    <label class="form-label"> Select Pickup Date:</label>
-                    <input type="text" id="datePicker" class="form-control" placeholder="Click to select date..." required>
-                    <input type="hidden" id="selectedDateInput">
+    <!-- Main Grid Content -->
+    <div class="dashboard-grid">
+        <!-- Left Column: Booking Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Book Appointment</h3>
+                <p>Choose your service, date, and time slot</p>
+            </div>
+            <div class="card-body">
+                <form id="appointmentForm">
+                    <div class="mb-3">
+                        <label for="nameInput" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="nameInput" placeholder="Enter full name..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailInput" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="emailInput" placeholder="Enter email address..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceSelect" class="form-label">Type of Service</label>
+                        <select class="form-select" id="serviceSelect" required>
+                            <option value="" selected disabled>Select a Service...</option>
+                            <option value="Transcript of Records (TOR)">Transcript of Records (TOR)</option>
+                            <option value="Diploma">Diploma</option>
+                            <option value="Certificate of Enrollment">Certificate of Enrollment</option>
+                            <option value="Certification of Grades">Certification of Grades</option>
+                            <option value="Summary of Grades">Summary of Grades</option>
+                            <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
+                            <option value="Honorable Dismissal">Honorable Dismissal</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Pickup Date:</label>
+                        <input type="text" id="datePicker" class="form-control" placeholder="Click to select date..." required>
+                        <input type="hidden" id="selectedDateInput">
+                    </div>
+
+                    <div class="mb-3" id="timeSlotGroup" style="display: none;">
+                        <label class="form-label">Select Time Slot:</label>
+                        <div id="timeSlotsContainer"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Get e-Ticket</button>
+                </form>
+
+                <div id="ticketContainer">
+                    <h4>Appointment Successfully Booked!</h4>
+                    <p id="ticketInfo" class="fw-bold mt-2"></p>
+                    <div id="qrcode" class="d-flex justify-content-center my-3"></div>
+                    <div>
+                        <button class="btn btn-outline-secondary btn-sm mt-2" onclick="location.reload()">Book Another</button>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="mb-3" id="timeSlotGroup" style="display: none;">
-                    <label class="form-label"> Select Time Slot:</label>
-                    <div id="timeSlotsContainer"></div>
+        <!-- Right Column: Holidays & Appointment History -->
+        <div>
+            <!-- Upcoming Holidays -->
+            <div class="card">
+                <div class="card-header" style="padding: 15px 20px;">
+                    <h3><i class="fa-solid fa-calendar-days" style="color: #38bdf8;"></i> Upcoming Holidays</h3>
                 </div>
-
-                <button type="submit" class="btn btn-primary w-100 py-2">Get e-Ticket</button>
-            </form>
-
-            <div id="ticketContainer">
-                <h4> Appointment Successfully Booked!</h4>
-                <p id="ticketInfo" class="fw-bold mt-2"></p>
-                <div id="qrcode" class="d-flex justify-content-center my-3"></div>
-                <div>
-                    <button class="btn btn-outline-secondary btn-sm mt-2" onclick="location.reload()">Book Another</button>
+                <div class="card-body" style="padding: 15px 20px;">
+                    <div class="holiday-item">
+                        <div class="holiday-info">
+                            <h5>Bonifacio Day</h5>
+                            <span>Regular Holiday</span>
+                        </div>
+                        <div class="holiday-date">NOV 30</div>
+                    </div>
+                    <div class="holiday-item">
+                        <div class="holiday-info">
+                            <h5>Christmas Day</h5>
+                            <span>Regular Holiday</span>
+                        </div>
+                        <div class="holiday-date">DEC 25</div>
+                    </div>
+                    <div class="holiday-item" style="margin-bottom: 0;">
+                        <div class="holiday-info">
+                            <h5>Rizal Day</h5>
+                            <span>Regular Holiday</span>
+                        </div>
+                        <div class="holiday-date">DEC 30</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="text-center mt-3">
-                <a href="index.html" class="text-decoration-none">← Log Out</a>
+            <!-- My Appointments History -->
+            <div class="card">
+                <div class="card-header" style="padding: 15px 20px;">
+                    <h3><i class="fa-solid fa-clock-rotate-left" style="color: #38bdf8;"></i> My Appointments</h3>
+                </div>
+                <div class="card-body" style="padding: 15px 20px;">
+                    <div id="appointmentHistoryContainer" class="history-list">
+                        <p class="text-muted text-center" style="font-size: 0.8rem; margin: 10px 0;">Loading history...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="modal-backdrop-custom">
+    <div class="modal-box">
+        <h3><i class="fa-solid fa-user-pen"></i> Edit Profile</h3>
+        <form id="editProfileForm" onsubmit="saveProfile(event)">
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="profileFullName" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Student Number</label>
+                <input type="text" class="form-control" id="profileStudentNumber" placeholder="e.g. CA202306112" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline-secondary" onclick="closeEditProfileModal()" style="width: 50%;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="width: 50%;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Contact Support Modal -->
+<div id="supportModal" class="modal-backdrop-custom">
+    <div class="modal-box">
+        <h3><i class="fa-solid fa-headset"></i> Contact Support</h3>
+        <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 15px;">
+            Need help with your documents or schedule? Reach out to the ICCT Registrar office assistance team:
+        </p>
+        <p style="font-size: 0.85rem; color: #38bdf8; margin-bottom: 5px;"><i class="fa-solid fa-envelope"></i> registrar@icct.edu.ph</p>
+        <p style="font-size: 0.85rem; color: #34d399; margin-bottom: 20px;"><i class="fa-solid fa-phone"></i> (02) 7-001-4228</p>
+        <button type="button" class="btn btn-primary" onclick="closeSupportModal()">Close</button>
+    </div>
+</div>
+
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
@@ -409,12 +718,132 @@
         "5:00 PM - 6:00 PM"
     ];
 
-    const loggedUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    if (loggedUser.name) {
-        document.getElementById('nameInput').value = loggedUser.name;
-        document.getElementById('emailInput').value = loggedUser.email || '';
+    // Helper: Binabasa ang nakaimbak na student profile mula sa anumang posibleng LocalStorage keys
+    function getRegisteredUser() {
+        const keys = ['currentUser', 'user', 'studentUser', 'student', 'registeredUser'];
+        for (let key of keys) {
+            const data = localStorage.getItem(key);
+            if (data) {
+                try {
+                    return JSON.parse(data);
+                } catch(e) {}
+            }
+        }
+        return {};
     }
 
+    let loggedUser = getRegisteredUser();
+
+    // Sinasalo ang mga ID na galing sa regFullName at regStudentNumber sa index.html mo
+    function getStudentName() {
+        return loggedUser.name || loggedUser.fullName || loggedUser.full_name || loggedUser.regFullName || 'Student';
+    }
+
+    function getStudentNumber() {
+        return loggedUser.studentNumber || loggedUser.student_number || loggedUser.studentNo || loggedUser.student_id || loggedUser.studentID || loggedUser.regStudentNumber || '';
+    }
+
+    function updateNavName() {
+        const name = getStudentName();
+        document.getElementById('navUsername').innerText = name;
+    }
+
+    // Toggle Dropdown Menu
+    function toggleMenu() {
+        document.getElementById('userDropdown').classList.toggle('show');
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.closest('.user-menu-wrapper')) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
+    }
+
+    // Edit Profile Modal Logic
+    function openEditProfileModal() {
+        document.getElementById('profileFullName').value = getStudentName();
+        document.getElementById('profileStudentNumber').value = getStudentNumber();
+        document.getElementById('editProfileModal').style.display = 'flex';
+        document.getElementById('userDropdown').classList.remove('show');
+    }
+
+    function closeEditProfileModal() {
+        document.getElementById('editProfileModal').style.display = 'none';
+    }
+
+    function saveProfile(e) {
+        e.preventDefault();
+        const newName = document.getElementById('profileFullName').value;
+        const newStudNum = document.getElementById('profileStudentNumber').value;
+
+        loggedUser.name = newName;
+        loggedUser.regFullName = newName;
+        loggedUser.studentNumber = newStudNum;
+        loggedUser.regStudentNumber = newStudNum;
+
+        localStorage.setItem('currentUser', JSON.stringify(loggedUser));
+        updateNavName();
+        closeEditProfileModal();
+        alert("Profile successfully updated!");
+    }
+
+    // Support Modal Logic
+    function openSupportModal() {
+        document.getElementById('supportModal').style.display = 'flex';
+        document.getElementById('userDropdown').classList.remove('show');
+    }
+
+    function closeSupportModal() {
+        document.getElementById('supportModal').style.display = 'none';
+    }
+
+    // Logout Logic
+    function logoutUser() {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('user');
+        window.location.href = 'index.html';
+    }
+
+    // Load Appointment History
+    // Load Appointment History
+    async function loadAppointmentHistory() {
+        const historyContainer = document.getElementById('appointmentHistoryContainer');
+        try {
+            // Kunin ang email O student number mula sa loggedUser
+            const email = loggedUser.email || loggedUser.regEmail || '';
+    const studentNumber = loggedUser.studentNumber || loggedUser.regStudentNumber || '';
+    
+    const res = await fetch(`/api/appointments?email=${encodeURIComponent(email)}&studentNumber=${encodeURIComponent(studentNumber)}`);
+            if (!res.ok) throw new Error("Failed to load");
+            const historyData = await res.json();
+
+            if (!historyData || historyData.length === 0) {
+                historyContainer.innerHTML = `<p class='text-muted text-center' style='font-size: 0.8rem; margin: 10px 0;'>No appointment history found.</p>`;
+                return;
+            }
+
+            historyContainer.innerHTML = "";
+            historyData.forEach(item => {
+                historyContainer.innerHTML += `
+                    <div class="history-item">
+                        <div class="h-top">
+                            <span>${item.service}</span>
+                            <span style="color: #34d399;">${item.status || 'Booked'}</span>
+                        </div>
+                        <div class="h-details">
+                            <i class="fa-regular fa-calendar"></i> ${item.targetDate} | ${item.targetTime}
+                        </div>
+                    </div>
+                `;
+            });
+        } catch (err) {
+            console.error("Error loading history:", err);
+            historyContainer.innerHTML = `<p class='text-muted text-center' style='font-size: 0.8rem; margin: 10px 0;'>No active appointments found.</p>`;
+        }
+    }
     let selectedDateStr = "";
     let globalSlotStatusCache = {};
 
@@ -578,7 +1007,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        updateNavName();
         initCalendar();
+        loadAppointmentHistory();
     });
 
     const form = document.getElementById('appointmentForm');
@@ -612,22 +1043,23 @@
                 ticketContainer.style.display = 'block';
                 ticketContainer.innerHTML = `
                     <div style="text-align: center; padding: 15px;">
-                        <h3 style="color: #4ade80; font-size: 1.2rem; margin-bottom: 12px; font-weight: 700;">
+                        <h3 style="color: #4ade80; font-size: 1.1rem; margin-bottom: 10px; font-weight: 700;">
                             Appointment Successfully Booked!
                         </h3>
-                        <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 15px;">
+                        <p style="color: #cbd5e1; font-size: 0.85rem; line-height: 1.5; margin-bottom: 12px;">
                             An e-Ticket together with your <strong>Official QR Code</strong> has been sent to your email:
                             <br/>
                             <strong style="color: #38bdf8; word-break: break-all;">${email}</strong>
                         </p>
-                        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px dashed rgba(255, 255, 255, 0.1); font-size: 0.8rem; color: #94a3b8; text-align: left; margin-bottom: 20px;">
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.1); font-size: 0.75rem; color: #94a3b8; text-align: left; margin-bottom: 15px;">
                              <strong>Reminder:</strong> Please check your Inbox or Spam folder. Present the QR code received in your email at <strong>${data.window || 'the designated window'}</strong> on <strong>${targetDate}</strong> (${targetTime}).
                         </div>
-                        <button onclick="window.location.reload()" class="btn btn-primary" style="margin: 0 auto; width: 100%; max-width: 220px; font-size: 0.85rem;">
+                        <button onclick="window.location.reload()" class="btn btn-primary" style="margin: 0 auto; width: 100%; max-width: 200px; font-size: 0.8rem;">
                             Book Another Appointment
                         </button>
                     </div>
                 `;
+                loadAppointmentHistory();
             } else {
                 alert(data.error || data.message || "Failed to create appointment.");
                 if (selectedDateStr) loadAvailableSlots(selectedDateStr);

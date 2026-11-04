@@ -401,20 +401,23 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    localStorage.setItem('studentName', data.user.name);
-                    localStorage.setItem('studentNumber', data.user.studentNumber);
-                    window.location.href = 'request.html';
-                } else {
-                    errorMsg.innerText = data.error || "Invalid credentials provided.";
-                    errorMsg.style.display = 'block';
-                }
-            } catch (err) {
-                console.error("Login Error:", err);
-                errorMsg.innerText = "Unable to connect to the server.";
-                errorMsg.style.display = 'block';
-            }
-        });
-
+            const userData = {
+                name: data.user.name,
+                studentNumber: data.user.studentNumber,
+                email: data.user.email || ''
+            };
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            window.location.href = 'request.html';
+        } else {
+            errMsg.innerText = data.error || "Invalid credentials provided.";
+            errMsg.style.display = 'block';
+        }
+    } catch (err) {
+        console.error("Login Error:", err);
+        errMsg.innerText = "Unable to connect to the server.";
+        errMsg.style.display = 'block';
+    }
+});
         // Registration Handler
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();

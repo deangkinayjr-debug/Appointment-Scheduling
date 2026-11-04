@@ -689,6 +689,36 @@ app.get('/verify', (req, res) => {
         </html>
     `);
 });
+// Get Appointments for Specific Student
+app.get('/api/my-appointments', async (req, res) => {
+    const email = req.query.email;
+    const studentNumber = req.query.studentNumber;
+    
+    if (!email && !studentNumber) {
+        return res.status(400).json({ error: "Identifier is required." });
+    }
+
+    if (isSupabaseConnected && supabase) {
+        try {
+            let query = supabase.from('appointments').select('*');
+            
+            if (email) {
+                query = query.eq('email', email);
+            } else if (studentNumber) {
+                query = query.eq('studentNumber', studentNumber);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+            return res.json(data || []);
+        } catch (err) {
+            console.error("Error fetching student appointments:", err.message);
+            return res.status(500).json({ error: "Failed to fetch appointments." });
+        }
+    } else {
+        return res.json([]);
+    }
+});
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
