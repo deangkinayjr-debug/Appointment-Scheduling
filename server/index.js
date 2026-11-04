@@ -324,9 +324,8 @@ app.post('/api/appointments', async (req, res) => {
 
     // MAGPADALA NG EMAIL SA GMAIL (KASAMA ANG QR CODE)
     if (email && email !== "N/A") {
-        const qrData = encodeURIComponent(`TICKET-ID:${savedAppointment.id}|Name:${name}|Service:${service}|Date:${targetDate}|Time:${targetTime}`);
-        const qrCodeUrl = `https://quickchart.io/qr?text=${qrData}&size=200`;
-
+const verifyUrl = `https://system-queue.online/verify?id=${savedAppointment.id}`;
+const qrCodeUrl = `https://quickchart.io/qr?text=${encodeURIComponent(verifyUrl)}&size=200`;
         const mailOptions = {
             from: `"ICCT Registrar" <registrar@system-queue.online>`,
             to: email,
@@ -602,7 +601,106 @@ app.get('/api/slot-status/:date', async (req, res) => {
 
     res.json(slotStatus);
 });
+// VERIFICATION ROUTE PARA SA QR CODE SCANNING
+app.get('/verify', (req, res) => {
+    const { id } = req.query;
 
+    // Hahanapin ang appointment details gamit ang ID (mula sa fallback/database)
+    const appointment = fallbackAppointments.find(app => String(app.id) === String(id));
+
+    if (!appointment) {
+        return res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Invalid Ticket - ICCT Registrar</title>
+                <style>
+                    body { background-color: #030712; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+                    .card { background: #0f172a; padding: 30px; border-radius: 16px; border: 1px solid #ef4444; text-align: center; max-width: 350px; }
+                    .badge { background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <span class="badge">✕ INVALID / NOT FOUND</span>
+                    <h3 style="margin-top:20px;">Ticket #${id || 'N/A'}</h3>
+                    <p style="color: #94a3b8; font-size: 14px;">Hindi mahanap ang record ng ticket na ito sa ICCT Registrar System.</p>
+                </div>
+            </body>
+            </html>
+        `);
+    }
+
+    // Kapag valid ang ticket, ire-render ang CodePen verification design:
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ICCT Registrar Pass Verification</title>
+            <style>
+                body { background-color: #030712; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+                .pass-card { width: 100%; max-width: 380px; background-color: #0f172a; border: 1px solid #334155; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+                .pass-header { background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); padding: 20px; text-align: center; color: #ffffff; }
+                .pass-header h2 { margin: 0; font-size: 20px; letter-spacing: 1.5px; }
+                .pass-header p { margin: 4px 0 0 0; font-size: 12px; color: #93c5fd; }
+                .status-box { padding: 20px 20px 10px 20px; text-align: center; }
+                .badge.verified { background-color: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); padding: 8px 18px; border-radius: 50px; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
+                .pass-body { padding: 15px 24px 20px 24px; }
+                .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e293b; font-size: 14px; }
+                .info-row:last-child { border-bottom: none; }
+                .label { color: #94a3b8; }
+                .value { color: #ffffff; font-weight: 600; }
+                .value.highlight { color: #38bdf8; }
+                .value.ticket-id { color: #c084fc; font-family: monospace; }
+                .pass-footer { background-color: #1e293b; padding: 12px; text-align: center; font-size: 11px; color: #64748b; }
+            </style>
+        </head>
+        <body>
+            <div class="pass-card">
+                <div class="pass-header">
+                    <h2>ICCT REGISTRAR</h2>
+                    <p>Official Verification Portal</p>
+                </div>
+                <div class="status-box">
+                    <span class="badge verified">✓ VALID E-TICKET</span>
+                </div>
+                <div class="pass-body">
+                    <div class="info-row">
+                        <span class="label">Pangalan:</span>
+                        <span class="value">${appointment.name}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Serbisyo:</span>
+                        <span class="value">${appointment.service}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Petsa:</span>
+                        <span class="value highlight">${appointment.targetDate}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Oras:</span>
+                        <span class="value highlight">${appointment.targetTime}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Window:</span>
+                        <span class="value">${appointment.assignedWindow || 'Window 1'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Ticket ID:</span>
+                        <span class="value ticket-id">#${appointment.id}</span>
+                    </div>
+                </div>
+                <div class="pass-footer">
+                    <p>Verified via system-queue.online</p>
+                </div>
+            </div>
+        </body>
+        </html>
+    `);
+});
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
