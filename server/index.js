@@ -594,7 +594,7 @@ app.get('/verify', (req, res) => {
     const { id } = req.query;
 
     // Hahanapin ang appointment details gamit ang ID (mula sa fallback/database)
-    const appointment = fallbackAppointments.find(app => String(app.id) === String(id));
+    const appointment = fallbackAppointments.find(app => String(app.ticket_number || app.ticketNumber || app.id) === String(id))
 
     if (!appointment) {
         return res.send(`
